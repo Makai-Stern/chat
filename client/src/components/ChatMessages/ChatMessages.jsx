@@ -3,6 +3,7 @@ import React from "react";
 import { Typography } from "antd";
 import { EditTwoTone } from "@ant-design/icons";
 
+import ChatInput from "components/ChatInput/ChatInput";
 import Message from "./Message";
 import styles from "./styles.module.scss";
 
@@ -15,7 +16,7 @@ const messages = [
         id: "1",
         type: "Text",
         text: "Awesome! It's going to be an awesome deal!",
-        attachment: '',
+        attachment: "",
         createdAt: "Tuesday April 7th at 1:21 PM",
         user: {
           id: "1",
@@ -29,7 +30,7 @@ const messages = [
         id: "2",
         type: "Text",
         text: "I reviewed the documents",
-        attachment: '',
+        attachment: "",
         createdAt: "Tuesday April 7th ar 1:21 PM",
         user: {
           id: "1",
@@ -133,7 +134,7 @@ function ChatMessages() {
         <Title
           level={3}
           style={{
-            marginBottom: "60px",
+            // marginBottom: "60px",
           }}
           editable={{
             icon: <EditTwoTone style={{ fontSize: "18px" }} />,
@@ -145,34 +146,37 @@ function ChatMessages() {
         </Title>
       </div>
 
-      {messages &&
-        messages.map((container, i) => {
-          let key = Object.keys(container)[0];
-          return (
-            <div>
-              <h5
-                style={{
-                  width: "100%",
-                  textAlign: "center",
-                  color: "#8c8c8c",
-                  marginTop: "30px",
-                  marginBottom: "20px",
-                }}
-              >
-                {key}
-              </h5>
+      <div className={styles.messagesContainer}>
+        {messages &&
+          messages.map((container, i) => {
+            let key = Object.keys(container)[0];
+            return (
+              <div>
+                <h5
+                  style={{
+                    width: "100%",
+                    textAlign: "center",
+                    color: "#8c8c8c",
+                    marginTop: "30px",
+                    marginBottom: "20px",
+                  }}
+                >
+                  {key}
+                </h5>
 
-              {container[key].map((message, i) => (
-                // Check message type
-                <Message
-                  previousMessage={container[key][i - 1]}
-                  key={i}
-                  message={message}
-                />
-              ))}
-            </div>
-          );
-        })}
+                {container[key].map((message, i) => (
+                  // Check message type
+                  <Message
+                    previousMessage={container[key][i - 1]}
+                    key={i}
+                    message={message}
+                  />
+                ))}
+              </div>
+            );
+          })}
+      </div>
+      <ChatInput />
     </div>
   );
 }
