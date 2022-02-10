@@ -1,0 +1,41 @@
+.authContainer {
+  background-color: #fff;
+}
+
+.formContainer {
+  width: 100vw;
+  height: calc(100vh - 53px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form {
+  padding: 74px 30px;
+  width: 400px;
+  border: 1px solid #eee;
+  background-color: #fff;
+
+  & > a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  & > h3 {
+    margin-bottom: 34px;
+    text-align: center;
+    color: "#434343";
+  }
+
+  & > span {
+    margin-bottom: 24px;
+  }
+
+  button {
+    margin-top: 10px;
+    margin-bottom: 24px;
+    width: 100%;
+  }
+}

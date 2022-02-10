@@ -1,0 +1,42 @@
+.container {
+  border-right: 1px solid #eee;
+  padding: 20px;
+  background-color: #fdfdfd;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  margin: 10px 0;
+  display: flex;
+}
+
+.receivedMessage {
+  background-color: rgb(243, 243, 243);
+}
+
+.messageContent {
+  padding: 8px;
+  border-radius: 10px;
+  max-width: 350px;
+}
+
+.sentMessage {
+  background-color: #1982fc;
+  color: #fff;
+}
+
+.imageAttachment {
+  border-radius: 10px;
+}
+
+.receivedFileAttachment {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  // font-size: 15px;
+  color: rgb(24, 144, 255);
+}
