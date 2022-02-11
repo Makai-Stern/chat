@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Button, Avatar, Dropdown, Divider, Image } from "antd";
+import { Typography, Button, Avatar, Dropdown, Divider, Image } from "antd";
 import { MessageTwoTone, DownOutlined, UserOutlined } from "@ant-design/icons";
 
 import HeaderMenu from "./HeaderMenu";
@@ -13,8 +13,14 @@ function Header() {
 
   return (
     <div className={styles.header}>
-      <div>
-        <MessageTwoTone style={{ fontSize: "25px" }} />
+      <div className={styles.logo}>
+        <MessageTwoTone style={{ fontSize: "25px", marginRight: "8px" }} />
+
+        <Typography.Text
+          style={{ fontWeight: 500, color: "rgb(24, 144, 255)" }}
+        >
+          Messenger
+        </Typography.Text>
       </div>
 
       {/* should check path and if logged in */}
@@ -46,7 +52,7 @@ function Header() {
           >
             MS
           </Avatar>
-          
+
           <Divider style={{ borderColor: "#CDCDCD" }} type="vertical" />
 
           <Dropdown overlay={HeaderMenu}>

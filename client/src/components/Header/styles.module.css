@@ -6,3 +6,8 @@
     border-bottom: 1px solid #eeee;
     background-color: #fff;
 }
+
+.logo {
+    display: flex;
+    align-items: center;
+}

@@ -1,5 +1,18 @@
 .container {
-  max-width: 350px;
-  min-width: 50px;
+  max-width: 500px;
+  min-width: 350px;
   height: calc(100vh - 53px);
+  padding: 20px;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.chatBgImageContainer {
+  width: 100%;
+
+  & > div {
+    width: 100%;
+  }
 }

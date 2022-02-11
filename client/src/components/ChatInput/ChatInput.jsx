@@ -16,11 +16,10 @@ function ChatInput() {
           borderRadius: "8px",
           borderColor: "rgb(229 228 228)",
         }}
-        defaultValue="https://ant.design"
+        placeholder="Send a message..."
+        defaultValue=""
       />
-      <Button type="primary" icon={<SendOutlined />}>
-        Send
-      </Button>
+      <Button icon={<SendOutlined />}>Send</Button>
     </div>
   );
 }

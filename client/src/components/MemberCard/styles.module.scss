@@ -1,0 +1,16 @@
+.memberCardContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.memberCardLeft {
+  display: flex;
+}
+
+.memberCardLeftMiddle {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
