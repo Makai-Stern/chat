@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "./api/venv/bin/python"
+  "python.pythonPath": ".\\api\\venv\\Scripts\\python.exe",
+  "python.defaultInterpreterPath": ".\\api\\venv\\Scripts\\python.exe"
 }

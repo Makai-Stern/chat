@@ -29,7 +29,7 @@ function App() {
           <Route
             exact
             path="/"
-            element={<PublicRoute component={Home} layout={DefaultLayout} />}
+            element={<PrivateRoute component={Home} layout={DefaultLayout} />}
           />
           <Route
             exact

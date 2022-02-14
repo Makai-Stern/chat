@@ -12,10 +12,15 @@
 
 .form {
   padding: 74px 30px;
+  padding-bottom: 50px;
   width: 400px;
   border: 1px solid #eee;
   background-color: #fff;
 
+  label {
+    display: none;
+  }
+  
   & > a {
     display: flex;
     align-items: center;
@@ -35,7 +40,7 @@
 
   button {
     margin-top: 10px;
-    margin-bottom: 24px;
+    margin-bottom: 34px;
     width: 100%;
   }
 }
