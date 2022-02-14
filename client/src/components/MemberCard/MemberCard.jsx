@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Avatar, Typography, Tag, Button } from "antd";
+import { Avatar, Typography, Tag, Button, Popconfirm, message } from "antd";
 import { MessageOutlined } from "@ant-design/icons";
 
 import styles from "./styles.module.scss";
@@ -31,7 +31,18 @@ function MemberCard({ user, style }) {
           <Text style={{ color: "#bfbfbf" }}>@{user.username}</Text>
         </div>
       </div>
-      <Button icon={<MessageOutlined />} />
+
+      {user.id !== 3 && (
+        <Popconfirm
+          placement="bottomRight"
+          title={`Create a new chat with ${user.name}?`}
+          onConfirm={null}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Button icon={<MessageOutlined />} />
+        </Popconfirm>
+      )}
     </div>
   );
 }

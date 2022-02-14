@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Typography, Tabs, Image } from "antd";
+import { Typography, Tabs, Image, Button } from "antd";
 import {
   FilePdfTwoTone,
   FileTextTwoTone,
@@ -98,17 +98,23 @@ function ChatPannel() {
         <Title level={5} style={{ color: "#595959", fontSize: "14px" }}>
           Attachments
         </Title>
-        <div style={{ marginTop: "15px", display: "flex" }}>
+        <div
+          style={{
+            marginTop: "15px",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "12px",
+          }}
+        >
           <Image
             src={
-              "https://images.pexels.com/photos/7210062/pexels-photo-7210062.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+              "https://images.pexels.com/photos/10533350/pexels-photo-10533350.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
             }
             style={{
               objectFit: "cover",
               width: "70px",
               height: "70px",
               borderRadius: "10px",
-              marginRight: "10px",
             }}
           />
           <div
@@ -121,23 +127,22 @@ function ChatPannel() {
               alignItems: "center",
               justifyContent: "center",
               border: "1px solid #f5f5f5",
-              marginRight: "10px",
             }}
           >
-            <FileExcelTwoTone style={{ fontSize: "25px" }} />
+            <FilePdfTwoTone style={{ fontSize: "25px" }} />
           </div>
           <Image
             src={
-              "https://images.pexels.com/photos/9595891/pexels-photo-9595891.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+              "https://images.pexels.com/photos/9986405/pexels-photo-9986405.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
             }
             style={{
               objectFit: "cover",
               width: "70px",
               height: "70px",
               borderRadius: "10px",
-              marginRight: "10px",
             }}
           />
+
           <div
             style={{
               width: "70px",
