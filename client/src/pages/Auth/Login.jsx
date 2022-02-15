@@ -9,8 +9,8 @@ import {
   LockOutlined,
 } from "@ant-design/icons";
 
-import Header from "components/Header/Header";
 import { AuthService } from "services";
+import Header from "components/Header/Header";
 import styles from "./styles.module.scss";
 
 const { Title } = Typography;
