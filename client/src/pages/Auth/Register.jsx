@@ -36,25 +36,95 @@ function Register() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [responseErrors, setResponseErrors] = React.useState({});
 
+  /**
+   * Keep a list of usernames and emails that are taken (for real-time validation)
+   * Usernames and emails will be appended to list after each submit (if taken)
+   **/
   const [takenUsernames, setTakenUsernames] = React.useState([]);
   const [takenEmails, setTakenEmails] = React.useState([]);
+
+  const checkName = (_, value) => {
+    // If name is null
+    if (!value) {
+      const requiredMessage = "Name is Required!";
+      setResponseErrors((prevResponseErrors) => {
+        const { name, ...newState } = prevResponseErrors;
+        return { name: requiredMessage, ...newState };
+      });
+      return Promise.reject(new Error(requiredMessage));
+    }
+    // If the server responds with an error for the name
+    if (responseErrors?.name) {
+      return Promise.reject(new Error(responseErrors.name));
+    }
+    // Resolve
+    return Promise.resolve();
+  };
 
   const checkUsername = (_, value) => {
     // If username is null
     if (!value) {
-      const usernameRequiredMessage = "Username is Required!";
+      const requiredMessage = "Username is Required!";
       setResponseErrors((prevResponseErrors) => {
         const { username, ...newState } = prevResponseErrors;
-        return { username: usernameRequiredMessage, ...newState };
+        return { username: requiredMessage, ...newState };
       });
-      return Promise.reject(new Error(usernameRequiredMessage));
+      return Promise.reject(new Error(requiredMessage));
     }
-
     // If the server responds with an error for the username
     if (responseErrors?.username) {
+      // Check if username is taken
+      if (responseErrors?.username === "Username is taken.") {
+        // Append username (if not in array)
+        !takenUsernames.includes(value) &&
+          setTakenUsernames((prevUsernames) => [value, ...prevUsernames]);
+      }
+
       return Promise.reject(new Error(responseErrors.username));
     }
+    // Resolve
+    return Promise.resolve();
+  };
 
+  const checkEmail = (_, value) => {
+    // If email is null
+    if (!value) {
+      const requiredMessage = "Email is Required!";
+      setResponseErrors((prevResponseErrors) => {
+        const { email, ...newState } = prevResponseErrors;
+        return { email: requiredMessage, ...newState };
+      });
+      return Promise.reject(new Error(requiredMessage));
+    }
+    // If the server responds with an error for the email
+    if (responseErrors?.email) {
+      // Check if username is taken
+      if (responseErrors?.email === "Email is taken.") {
+        // Append username (if not in array)
+        !takenEmails.includes(value) &&
+          setTakenEmails((prevEmails) => [value, ...prevEmails]);
+      }
+      return Promise.reject(new Error(responseErrors.email));
+    }
+    // Resolve
+    return Promise.resolve();
+  };
+
+  const checkPassword = (_, value) => {
+    // If password is null
+    if (!value) {
+      const requiredMessage = "Password is Required!";
+      setResponseErrors((prevResponseErrors) => {
+        const { password, ...newState } = prevResponseErrors;
+        return { password: requiredMessage, ...newState };
+      });
+      return Promise.reject(new Error(requiredMessage));
+    }
+    // If the server responds with an error for the password
+    if (responseErrors?.password) {
+      return Promise.reject(new Error(responseErrors.password));
+    }
+    // Resolve
     return Promise.resolve();
   };
 
@@ -63,7 +133,7 @@ function Register() {
     value = value.replace(/\s/g, "");
 
     // If username is only spaces
-    if (value.length == 0) {
+    if (value.length === 0) {
       setResponseErrors((prevResponseErrors) => {
         const { username, ...newState } = prevResponseErrors;
         return { username: "Username is Required!", ...newState };
@@ -72,6 +142,19 @@ function Register() {
     }
 
     if (value.length >= 4) {
+      // check if value in username taken list
+      if (takenUsernames.includes(value)) {
+        // if true, update erorr state
+        setResponseErrors((prevResponseErrors) => {
+          const { username, ...newState } = prevResponseErrors;
+          return {
+            username: "Username is taken.",
+            ...newState,
+          };
+        });
+        return;
+      }
+
       setResponseErrors((prevResponseErrors) => {
         const { username, ...newState } = prevResponseErrors;
         return { ...newState };
@@ -87,7 +170,47 @@ function Register() {
     }
   };
 
-  const checkEmail = (_, value) => {};
+  const onEmailChange = (event) => {
+    let value = event.target.value;
+    const emailRegex =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    
+    // If email is only spaces
+    if (value.length === 0) {
+      setResponseErrors((prevResponseErrors) => {
+        const { email, ...newState } = prevResponseErrors;
+        return { email: "Email is Required!", ...newState };
+      });
+      return;
+    } else {
+      if (!emailRegex.test(value.toLowerCase())) {
+        setResponseErrors((prevResponseErrors) => {
+          const { email, ...newState } = prevResponseErrors;
+          return { email: "Email is not a valid email!", ...newState };
+        });
+        return;
+      } 
+
+       // check if value in username taken list
+       if (takenEmails.includes(value)) {
+        // if true, update erorr state
+        setResponseErrors((prevResponseErrors) => {
+          const { email, ...newState } = prevResponseErrors;
+          return {
+            email: "Email is taken.",
+            ...newState,
+          };
+        });
+        return;
+      }
+
+      // Clear email errors
+      setResponseErrors((prevResponseErrors) => {
+        const { email, ...newState } = prevResponseErrors;
+        return { ...newState };
+      });
+    }
+  };
 
   const onFinish = async (user) => {
     console.log("Form submitted");
@@ -104,6 +227,8 @@ function Register() {
         setResponseErrors(errorObject);
         message.error("Please correct the errors below");
         console.log(errorObject);
+        // Validate Form (will show errors from server)
+        form.validateFields();
       }
       setIsLoading(false);
       return;
@@ -111,7 +236,7 @@ function Register() {
     // The login was successful (cookie is set)
     setIsLoading(false);
     message.success("Registration is successful.");
-    // navigate("/");
+    navigate("/login");
   };
 
   return (
@@ -173,10 +298,12 @@ function Register() {
               {
                 required: true,
                 type: "email",
+                validator: checkEmail,
               },
             ]}
           >
             <Input
+              onChange={onEmailChange}
               prefix={
                 <MailOutlined style={{ color: "#bfbfbf", marginRight: 4 }} />
               }
