@@ -1,7 +1,7 @@
 import React from "react";
 
-import { useNavigate } from "react-router-dom";
-import { Input, Typography, Button, Form, message } from "antd";
+import { useNavigate, Navigate } from "react-router-dom";
+import { Input, Typography, Button, Form, message, Spin } from "antd";
 import {
   EyeInvisibleOutlined,
   EyeTwoTone,
@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 
 import { AuthService } from "services";
+import useAuthStatus from "hooks/useAuthStatus";
 import Header from "components/Header/Header";
 import styles from "./styles.module.scss";
 
@@ -31,6 +32,8 @@ function Login() {
 
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  // Checks if user is already logged in
+  const { authenticated, loading } = useAuthStatus();
 
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -54,6 +57,26 @@ function Login() {
     message.success("You are logged in.");
     navigate("/");
   };
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Spin />
+      </div>
+    );
+  }
+
+  if (authenticated) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div className={styles.authContainer}>
