@@ -128,6 +128,34 @@ function Register() {
     return Promise.resolve();
   };
 
+  const onNameChange = (event) => {
+    let value = event.target.value;
+    const nameRegex = /^\s*([A-Za-z]{1,}([\.,] |[-']| ))+[A-Za-z]+\.?\s*$/;
+
+    // If username is only spaces
+    if (value.length === 0) {
+      setResponseErrors((prevResponseErrors) => {
+        const { name, ...newState } = prevResponseErrors;
+        return { name: "Name is Required!", ...newState };
+      });
+      return;
+    }
+
+    if (!nameRegex.test(value)) {
+      setResponseErrors((prevResponseErrors) => {
+        const { name, ...newState } = prevResponseErrors;
+        return { name: "Name is invalid.", ...newState };
+      });
+      return;
+    }
+
+    // Clear name errors
+    setResponseErrors((prevResponseErrors) => {
+      const { name, ...newState } = prevResponseErrors;
+      return { ...newState };
+    });
+  };
+
   const onUsernameChange = (event) => {
     let value = event.target.value;
     value = value.replace(/\s/g, "");
@@ -174,7 +202,7 @@ function Register() {
     let value = event.target.value;
     const emailRegex =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    
+
     // If email is only spaces
     if (value.length === 0) {
       setResponseErrors((prevResponseErrors) => {
@@ -189,10 +217,10 @@ function Register() {
           return { email: "Email is not a valid email!", ...newState };
         });
         return;
-      } 
+      }
 
-       // check if value in username taken list
-       if (takenEmails.includes(value)) {
+      // check if value in username taken list
+      if (takenEmails.includes(value)) {
         // if true, update erorr state
         setResponseErrors((prevResponseErrors) => {
           const { email, ...newState } = prevResponseErrors;
@@ -210,6 +238,37 @@ function Register() {
         return { ...newState };
       });
     }
+  };
+
+  const onPasswordChange = (event) => {
+    let value = event.target.value;
+
+    // Password is required
+    if (value.length === 0) {
+      setResponseErrors((prevResponseErrors) => {
+        const { password, ...newState } = prevResponseErrors;
+        return { password: "Password is Required!", ...newState };
+      });
+      return;
+    }
+
+    // Simple validation for password
+    if (value.length < 6) {
+      setResponseErrors((prevResponseErrors) => {
+        const { password, ...newState } = prevResponseErrors;
+        return {
+          password: "Password must be at least 6 characters.",
+          ...newState,
+        };
+      });
+      return;
+    }
+
+    // Clear email errors
+    setResponseErrors((prevResponseErrors) => {
+      const { password, ...newState } = prevResponseErrors;
+      return { ...newState };
+    });
   };
 
   const onFinish = async (user) => {
@@ -259,10 +318,12 @@ function Register() {
             rules={[
               {
                 required: true,
+                validator: checkName,
               },
             ]}
           >
             <Input
+              onChange={onNameChange}
               prefix={
                 <ProfileOutlined style={{ color: "#bfbfbf", marginRight: 4 }} />
               }
@@ -318,10 +379,12 @@ function Register() {
             rules={[
               {
                 required: true,
+                validator: checkPassword,
               },
             ]}
           >
             <Input.Password
+              onChange={onPasswordChange}
               prefix={
                 <LockOutlined style={{ color: "#bfbfbf", marginRight: 4 }} />
               }
