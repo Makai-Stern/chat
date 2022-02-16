@@ -1,29 +1,10 @@
 import React from "react";
 
-import {
-  Drawer,
-  Radio,
-  Space,
-  Form,
-  Input,
-  InputNumber,
-  Cascader,
-  Select,
-  Row,
-  Col,
-  Checkbox,
-  Button,
-  AutoComplete,
-  message,
-  Upload,
-} from "antd";
+import { Drawer, Form, Input, Select, Button, message, Upload } from "antd";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 
-import {
-  InfoCircleOutlined,
-  LoadingOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
-
+import { UserService } from "services";
+import DebounceSelect from "./DebounceSelect";
 import "./styles.css";
 
 const { Option } = Select;
@@ -31,19 +12,34 @@ const { Option } = Select;
 function AddChatDrawer(props) {
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
+  const [chatName, setChatName] = "";
+  const [imageUrl, setImageUrl] = React.useState(
+    "https://images.unsplash.com/photo-1645037057784-1c68f3b2fb2f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+  );
 
-  const children = [];
-  for (let i = 10; i < 36; i++) {
-    children.push(
-      <Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>
-    );
-  }
+  // const [users, setUsers] = React.useState([]);
 
   const handleChange = (value) => {
     console.log(`selected ${value}`);
   };
 
   const beforeUpload = () => {};
+
+  const fetchUserList = async (value) => {
+    const response = await UserService.find(value);
+    if (response.error) {
+      message.error(
+        "The server could not handle your request. Please try again."
+      );
+      return;
+    }
+    return response.data.map((user) => {
+      return {
+        label: `${user.name} - @${user.username}`,
+        value: user.username,
+      };
+    });
+  };
 
   const uploadButton = (
     <div>
@@ -52,7 +48,6 @@ function AddChatDrawer(props) {
     </div>
   );
 
-  const imageUrl = "";
   return (
     <Drawer
       title="Create Chat"
@@ -68,56 +63,66 @@ function AddChatDrawer(props) {
         initialValues={true}
         requiredMark={true}
       >
-        <Form.Item label="Group Image">
-          <Upload
-            disabled
-            name="avatar"
-            listType="picture-card"
-            className="avatar-uploader"
-            showUploadList={false}
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            beforeUpload={beforeUpload}
-            onChange={handleChange}
-          >
-            {imageUrl ? (
-              <img src={imageUrl} alt="avatar" style={{ width: "100%" }} />
-            ) : (
-              uploadButton
-            )}
-          </Upload>
-        </Form.Item>
-
-        <Form.Item label={"Members"}>
-          <Select
-            mode="multiple"
-            allowClear
-            style={{ width: "100%" }}
-            placeholder="Please select"
-            defaultValue={["a10", "c12"]}
-            onChange={handleChange}
-          >
-            {children}
-          </Select>
-        </Form.Item>
-
         <Form.Item
-          label="Chat Name"
+          label={"Members"}
           required
           tooltip="This is a required field"
         >
-          <Input placeholder="input placeholder" />
+          <DebounceSelect
+            mode="multiple"
+            value={props.users}
+            setValue={props.setUsers}
+            placeholder="Select users"
+            fetchOptions={fetchUserList}
+            onChange={(newValue) => {
+              props.setUsers(newValue);
+            }}
+            style={{ width: "100%" }}
+          />
         </Form.Item>
-        <Form.Item
-          label="Field B"
-          tooltip={{
-            title: "Tooltip with customize icon",
-            icon: <InfoCircleOutlined />,
-          }}
-        >
-          <Input placeholder="input placeholder" />
-        </Form.Item>
+
+        {props.users
+          ? props.users.length > 1 && (
+              <>
+                <Form.Item
+                  label="Chat Name"
+                  required
+                  tooltip="This is a required field"
+                >
+                  <Input placeholder="Chat Name" />
+                </Form.Item>
+
+                <Form.Item label="Group Image">
+                  <Upload
+                    name="group-image"
+                    listType="picture-card"
+                    // className="avatar-uploader"
+                    showUploadList={false}
+                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                    beforeUpload={beforeUpload}
+                    onChange={handleChange}
+                  >
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt="avatar"
+                        style={{
+                          width: "100%",
+                          height: "102px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      uploadButton
+                    )}
+                  </Upload>
+                </Form.Item>
+              </>
+            )
+          : ""}
+
         <Form.Item>
-          <Button type="primary">Submit</Button>
+          <Button type="primary">Continue</Button>
         </Form.Item>
       </Form>
     </Drawer>

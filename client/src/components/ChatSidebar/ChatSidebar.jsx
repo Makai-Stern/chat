@@ -15,6 +15,8 @@ function ChatSidebar() {
   let chatCount = "27";
   const onSearch = (value) => console.log(value);
 
+  // Chat Drawer State (state had to be outside, so that user list can be cleared)
+  const [users, setUsers] = React.useState([]);
   const [visible, setVisible] = React.useState(false);
 
   const showDrawer = () => {
@@ -23,17 +25,20 @@ function ChatSidebar() {
 
   const onClose = () => {
     setVisible(false);
+    setUsers([]);
   };
 
   return (
     <div className={styles.sidebar}>
       <div className={styles.sidebarSpaceBetween}>
         <Title level={5}>Chats ({chatCount})</Title>
-        <Button onClick={showDrawer} type="link" icon={<PlusOutlined/>} />
+        <Button onClick={showDrawer} type="link" icon={<PlusOutlined />} />
         <AddChatDrawer
           visible={visible}
           showDrawer={showDrawer}
           onClose={onClose}
+          users={users}
+          setUsers={setUsers}
         />
       </div>
       <div className={styles.sidebarSpaceBetween}>

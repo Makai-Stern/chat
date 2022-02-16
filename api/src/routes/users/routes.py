@@ -56,6 +56,9 @@ def get_one(
         else:
             return db_user.to_dict()
 
+    if not id_is_uuid:
+        return []
+        
     return JSONResponse(
         content={"error": "User does not exist."},
         status_code=400,
