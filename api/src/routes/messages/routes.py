@@ -7,9 +7,9 @@ from fastapi import APIRouter, Depends, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
-from database.models.Attachment import Attachment
 
-from database.models import User, Chat, Message
+from database.associations import Readby
+from database.models import User, Chat, Message, Attachment
 from database.connect import get_db
 from src.middlewares import JWTBearer
 from src.utils import resize_img
@@ -24,7 +24,7 @@ def read_message(
     db: Session = Depends(get_db),
     current_user: User = Depends(JWTBearer()),
 ):
-    message = db.query(Message).filter(Chat.id == id).first()
+    message = db.query(Message).filter(Message.id == id).first()
 
     # check if message exists
     if message is None:
@@ -42,9 +42,11 @@ def read_message(
         )
 
     # check if user is in chat
-    if current_user is chat.users:
-        message.read_by.append(current_user)
+    if current_user in chat.users:
+        readBy = Readby(user=current_user, message=message)
+        db.add(readBy)
         db.commit()
+        db.refresh(message)
         return message.to_dict()
 
     return JSONResponse(

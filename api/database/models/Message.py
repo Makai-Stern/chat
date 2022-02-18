@@ -44,10 +44,10 @@ class Message(Base):
             type=self.type,
             text=self.text,
             user=self.user.to_dict(),
-            read_by=self.read_by,
+            read_by=[read_by.to_dict() for read_by in self.read_by],
             attachment=self.attachment.to_dict() if self.attachment else None,
             created_at=self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
             updated_at=self.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
             day=self.created_at.strftime("%d %B, %Y"),
-            dayWithHour=self.created_at.strftime("%d %B, %Y at %H:%M %p")
+            dayWithHour=self.created_at.strftime("%d %B, %Y at %H:%M %p"),
         )
