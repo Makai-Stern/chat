@@ -79,11 +79,12 @@ class Chat(Base):
             id=self.id,
             owner=self.owner.to_dict(),
             name=self.name,
-            img=f"{DOMAIN}{self.img}" if self.img else None,
-            latest_message=self.messages[len(self.messages) - 1].to_dict()
+            type=self.type,
+            backgroundImage=f"{DOMAIN}{self.img}" if self.img else None,
+            lastMessage=self.messages[len(self.messages) - 1].to_dict()
             if len(self.messages) > 0
             else None,
             users=[user.to_dict() for user in self.users],
-            created_at=self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            updated_at=self.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
+            createdAt=self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            updatedAt=self.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
         )

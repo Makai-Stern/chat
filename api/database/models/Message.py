@@ -40,14 +40,14 @@ class Message(Base):
     def to_dict(self):
         return dict(
             id=self.id,
-            chat_id=self.chat_id,
+            chatId=self.chat_id,
             type=self.type,
             text=self.text,
             user=self.user.to_dict(),
-            read_by=[read_by.to_dict() for read_by in self.read_by],
+            readBy=[read_by.to_dict() for read_by in self.read_by],
             attachment=self.attachment.to_dict() if self.attachment else None,
-            created_at=self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            updated_at=self.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
+            createdAt=self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            updatedAt=self.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
             day=self.created_at.strftime("%d %B, %Y"),
             dayWithHour=self.created_at.strftime("%d %B, %Y at %H:%M %p"),
         )

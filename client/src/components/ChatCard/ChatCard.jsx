@@ -1,45 +1,58 @@
 import React from "react";
 
 import { Typography, Avatar, Image } from "antd";
+import { UserOutlined, UsergroupAddOutlined } from "@ant-design/icons";
+import Moment from "react-moment";
 
+import { useChatState } from "store";
+import { useAuthState } from "store";
 import styles from "./styles.module.scss";
 
 const { Text } = Typography;
 
 function ChatCard({ chat }) {
-  const activeChat = chat.id === "active" ? true : false;
-  const chatUserCount = 4;
-  const avatarBackgroundColor = "#1890ff";
-  const avatarTextColor = "#1890ff";
+  const user = useAuthState((state) => state.user);
+  const currentChatId = useChatState((state) => state.currentChatId);
+  const activeChat = chat.id === currentChatId ? true : false;
+
+  const [readByUser, setReadByUser] = React.useState(false);
+  const [chatName, setChatName] = React.useState("");
+  const [singleChatImage, setSingleChatImage] = React.useState("");
+
+  React.useEffect(() => {
+    if (chat?.type === "single") {
+      let recipient = {};
+
+      chat.users.forEach((u) => {
+        if (u.id !== user.id) recipient = u;
+      });
+
+      // Set defaults for single chat
+      setChatName(recipient.name);
+      setSingleChatImage(recipient.profileImage);
+    }
+  }, []);
+
+  console.log(chat);
 
   return (
     <div className={styles.container}>
       {chat ? (
         <>
-          {chat.type === "Group" && (
+          {chat.type === "group" && (
             <div
               className={styles.chatCard}
               style={activeChat ? { backgroundColor: "#F9FAFB" } : {}}
             >
               <div className={styles.chatCardLeft}>
-                {/* Chat Avatar */}
-                {chat.backgroundImage ? (
-                  <Avatar
-                    className={styles.avatar}
-                    src={chat.backgroundImage}
-                    shape="square"
-                    size={42}
-                  />
-                ) : (
-                  <Avatar
-                    className={styles.avatar}
-                    style={{ backgroundColor: avatarBackgroundColor }}
-                    shape="square"
-                    size={42}
-                  >
-                    {chatUserCount}
-                  </Avatar>
-                )}
+                <Avatar
+                  className={styles.avatar}
+                  src={chat.backgroundImage}
+                  icon={<UsergroupAddOutlined />}
+                  shape="square"
+                  size={42}
+                />
+
                 <div className={styles.chatCardLeftItems}>
                   {/* Chat Name */}
                   <Text
@@ -53,57 +66,85 @@ function ChatCard({ chat }) {
                     {chat.name}
                   </Text>
                   <div className={styles.chatCardLeftPreview}>
-                    {/* Chat Preview */}
-                    {chat.lastMessage.type === "Text" && (
-                      <div className={styles.messagePreview}>
-                        <Text
-                          ellipsis={true}
-                          style={{
-                            color: "#8c8c8c",
-                            fontSize: "12px",
-                            maxWidth: "150px",
-                          }}
-                        >
-                          {chat.lastMessage.user.name}: {chat.lastMessage.text}
-                        </Text>
-                      </div>
-                    )}
-                    {chat.lastMessage.type === "Attachment" && (
-                      <div className={styles.messagePreview}>
-                        <Text
-                          ellipsis={true}
-                          style={{
-                            color: "#8c8c8c",
-                            fontSize: "12px",
-                            maxWidth: "150px",
-                          }}
-                        >
-                          {/* {chat.lastMessage.user.name} Attached a file */}
-                          New file attached
-                        </Text>
-                      </div>
+                    {chat.lastMessage ? (
+                      <>
+                        {/* Chat Preview */}
+                        {chat.lastMessage.type === "text" && (
+                          <div className={styles.messagePreview}>
+                            <Text
+                              ellipsis={true}
+                              style={{
+                                color: "#8c8c8c",
+                                fontSize: "12px",
+                                maxWidth: "150px",
+                              }}
+                            >
+                              {chat.lastMessage.user.name}:{" "}
+                              {chat.lastMessage.text}
+                            </Text>
+                          </div>
+                        )}
+                        {chat.lastMessage.type === "attachment" && (
+                          <div className={styles.messagePreview}>
+                            <Text
+                              ellipsis={true}
+                              style={{
+                                color: "#8c8c8c",
+                                fontSize: "12px",
+                                maxWidth: "150px",
+                              }}
+                            >
+                              {chat.lastMessage.user.name} Attached a file
+                            </Text>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <Text
+                        ellipsis={true}
+                        style={{
+                          color: "#40a9ff",
+                          fontSize: "12px",
+                          maxWidth: "150px",
+                        }}
+                      >
+                        New Chat
+                      </Text>
                     )}
                   </div>
                 </div>
               </div>
               {/* Use Moment */}
-              {chat.lastMessage.createdAt && (
-                <Text style={{ color: "#8c8c8c", fontSize: "12px" }}>4h</Text>
+              {chat.lastMessage?.createdAt ? (
+                <Text style={{ color: "#8c8c8c", fontSize: "12px" }}>
+                  <Moment fromNow ago>
+                    {chat.lastMessage.createdAt}
+                  </Moment>
+                </Text>
+              ) : (
+                <Text style={{ color: "#8c8c8c", fontSize: "12px" }}>
+                  <Moment fromNow ago>
+                    {chat.createdAt}
+                  </Moment>
+                </Text>
               )}
             </div>
           )}
 
-          {chat.type === "Single" && (
-            <div className={styles.chatCard}>
+          {chat.type === "single" && (
+            <div
+              className={styles.chatCard}
+              style={activeChat ? { backgroundColor: "#F9FAFB" } : {}}
+            >
               <div className={styles.chatCardLeft}>
                 <Avatar
                   className={styles.avatar}
-                  src={chat.users[0].profileImage}
-                  style={{ backgroundColor: avatarBackgroundColor }}
+                  src={singleChatImage}
                   shape="square"
                   size={42}
+                  icon={<UserOutlined />}
                 >
-                  {chat.users[0].name[0]}
+                  {chatName}
                 </Avatar>
 
                 <div className={styles.chatCardLeftItems}>
@@ -116,46 +157,70 @@ function ChatCard({ chat }) {
                     }}
                     ellipsis
                   >
-                    {chat.name}
+                    {chatName}
                   </Text>
                   <div className={styles.chatCardLeftPreview}>
-                    {/* Chat Preview */}
-                    {chat.lastMessage.type === "Text" && (
-                      <div className={styles.messagePreview}>
-                        <Text
-                          ellipsis={true}
-                          style={{
-                            color: "#8c8c8c",
-                            fontSize: "12px",
-                            maxWidth: "150px",
-                          }}
-                        >
-                          {chat.lastMessage.user.name}: {chat.lastMessage.text}
-                        </Text>
-                      </div>
-                    )}
-                    {chat.lastMessage.type === "Attachment" && (
-                      <div className={styles.messagePreview}>
-                        <Text
-                          ellipsis={true}
-                          style={{
-                            color: "#8c8c8c",
-                            fontSize: "12px",
-                            maxWidth: "150px",
-                          }}
-                        >
-                          {chat.lastMessage.user.name} Attached a file
-                        </Text>
-                      </div>
+                    {chat.lastMessage ? (
+                      <>
+                        {/* Chat Preview */}
+                        {chat.lastMessage.type === "text" && (
+                          <div className={styles.messagePreview}>
+                            <Text
+                              ellipsis={true}
+                              style={{
+                                color: "#8c8c8c",
+                                fontSize: "12px",
+                                maxWidth: "150px",
+                              }}
+                            >
+                              {chat.lastMessage.user.name}:{" "}
+                              {chat.lastMessage.text}
+                            </Text>
+                          </div>
+                        )}
+                        {chat.lastMessage.type === "attachment" && (
+                          <div className={styles.messagePreview}>
+                            <Text
+                              ellipsis={true}
+                              style={{
+                                color: "#8c8c8c",
+                                fontSize: "12px",
+                                maxWidth: "150px",
+                              }}
+                            >
+                              {chat.lastMessage.user.name} Attached a file
+                            </Text>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <Text
+                        ellipsis={true}
+                        style={{
+                          color: "#40a9ff",
+                          fontSize: "12px",
+                          maxWidth: "150px",
+                        }}
+                      >
+                        New Chat
+                      </Text>
                     )}
                   </div>
                 </div>
               </div>
               {/* Use Moment */}
               <div style={{ height: "100%" }}>
-                {chat.lastMessage.createdAt && (
+                {chat.lastMessage?.createdAt ? (
                   <Text style={{ color: "#8c8c8c", fontSize: "12px" }}>
-                    12m
+                    <Moment fromNow ago>
+                      {chat.lastMessage.createdAt}
+                    </Moment>
+                  </Text>
+                ) : (
+                  <Text style={{ color: "#8c8c8c", fontSize: "12px" }}>
+                    <Moment fromNow ago>
+                      {chat.createdAt}
+                    </Moment>
                   </Text>
                 )}
               </div>

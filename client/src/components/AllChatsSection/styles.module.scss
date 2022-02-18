@@ -1,6 +1,7 @@
 .container {
   overflow-y: scroll;
-  max-height: 56%;
+  // max-height: 56%;
+  max-height: calc(100vh - 193px);
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
