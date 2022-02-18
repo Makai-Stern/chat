@@ -20,7 +20,10 @@ class Chat(Base):
     # __table_args__ = (
     #     UniqueConstraint("name", "user_id"),
     # )
-    id = Column("id", Text(length=36), default=lambda: str(uuid.uuid4()), primary_key=True)
+    id = Column(
+        "id", Text(length=36), default=lambda: str(uuid.uuid4()), primary_key=True
+    )
+    type = Column(Text)
     name = Column(Text)
     img = Column(String)
 
@@ -36,13 +39,11 @@ class Chat(Base):
 
     # timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), default=func.now(), onupdate=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), default=func.now(), onupdate=func.now()
+    )
 
-    def update_image(self, type, image):
-        """
-        This function will update the profile or background image of the user
-        type: 'profile' || 'background'
-        """
+    def update_image(self, image):
 
         if image.filename:
             ext = os.path.splitext(image.filename)[1]
@@ -73,14 +74,15 @@ class Chat(Base):
                 except OSError:
                     pass
 
-
     def to_dict(self):
         return dict(
             id=self.id,
             owner=self.owner.to_dict(),
             name=self.name,
             img=f"{DOMAIN}{self.img}" if self.img else None,
-            latest_message=self.messages[len(self.messages) - 1].to_dict() if len(self.messages) > 0  else None,
+            latest_message=self.messages[len(self.messages) - 1].to_dict()
+            if len(self.messages) > 0
+            else None,
             users=[user.to_dict() for user in self.users],
             created_at=self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
             updated_at=self.updated_at.strftime("%Y-%m-%d %H:%M:%S"),

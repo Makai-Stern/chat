@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Typography, Input, Button } from "antd";
 import { PlusOutlined, PushpinFilled } from "@ant-design/icons";
 
@@ -50,7 +49,7 @@ function ChatSidebar() {
           />
         </div>
       </div>
-      <PinnedChatsSection />
+      {/* <PinnedChatsSection /> */}
       <AllChatsSection />
     </div>
   );

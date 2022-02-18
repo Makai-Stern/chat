@@ -1,12 +1,7 @@
 import React from "react";
 
-import { Typography } from "antd";
-import { MessageFilled } from "@ant-design/icons";
-
 import styles from "./styles.module.scss";
 import ChatCard from "components/ChatCard/ChatCard";
-
-const { Text } = Typography;
 
 const chats = [
   {
@@ -134,12 +129,12 @@ const chats = [
 function AllChatsSection() {
   return (
     <>
-      <div style={{ marginBottom: "5px" }}>
+      {/* <div style={{ marginBottom: "5px" }}>
         <MessageFilled
           style={{ color: "#8c8c8c", marginRight: "6px", fontSize: "14px" }}
         />
         <Text style={{ color: "#8c8c8c", fontSize: "14px" }}>All Messages</Text>
-      </div>
+      </div> */}
       <div className={styles.container}>
         <div>
           {chats.map((chat) => (

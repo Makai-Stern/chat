@@ -6,7 +6,7 @@ from sqlalchemy.sql import func
 from decouple import config
 
 from database import Base
-from database.associations import Message_Attachment
+# from database.associations import Message_Attachment
 
 
 DOMAIN = config("DOMAIN")
@@ -22,7 +22,7 @@ class Attachment(Base):
     """Relationships"""
     user_id = Column(Text, ForeignKey("users.id"))
     user = relationship("User", back_populates="attachments")
-    messages = relationship("Message", secondary=Message_Attachment, back_populates="attachments")
+    messages = relationship("Message", back_populates="attachment")
    
     # timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())

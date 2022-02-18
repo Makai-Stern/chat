@@ -1,23 +1,16 @@
 import React from "react";
-
-import { Drawer, Form, Input, Select, Button, message, Upload } from "antd";
+import { Drawer, Form, Input, Button, message, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 
 import { UserService } from "services";
 import DebounceSelect from "./DebounceSelect";
 import "./styles.css";
 
-const { Option } = Select;
-
 function AddChatDrawer(props) {
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
-  const [chatName, setChatName] = "";
-  const [imageUrl, setImageUrl] = React.useState(
-    "https://images.unsplash.com/photo-1645037057784-1c68f3b2fb2f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
-  );
-
-  // const [users, setUsers] = React.useState([]);
+  const [chatName, setChatName] = React.useState("");
+  const [imageUrl, setImageUrl] = React.useState("");
 
   const handleChange = (value) => {
     console.log(`selected ${value}`);
@@ -41,6 +34,20 @@ function AddChatDrawer(props) {
     });
   };
 
+  const onFinish = (values) => {
+    const formData = new FormData();
+    alert("form submitted");
+  };
+
+  // Validators
+  const checkUsers = (_, value) => {
+    const { users } = props;
+    console.log(users.length);
+    if (users.length === 0) return Promise.reject(new Error("Users required"));
+
+    return Promise.resolve();
+  };
+
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -62,10 +69,11 @@ function AddChatDrawer(props) {
         layout="vertical"
         initialValues={true}
         requiredMark={true}
+        onFinish={onFinish}
       >
         <Form.Item
           label={"Members"}
-          required
+          rules={[{ required: true, validator: checkUsers }]}
           tooltip="This is a required field"
         >
           <DebounceSelect
@@ -122,7 +130,13 @@ function AddChatDrawer(props) {
           : ""}
 
         <Form.Item>
-          <Button type="primary">Continue</Button>
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={props.users.length === 0 ? true : false}
+          >
+            Continue
+          </Button>
         </Form.Item>
       </Form>
     </Drawer>
