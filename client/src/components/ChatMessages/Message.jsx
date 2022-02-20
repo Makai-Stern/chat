@@ -9,13 +9,15 @@ import {
   FileWordTwoTone,
   FilePptTwoTone,
   FileZipTwoTone,
+  UserOutlined
 } from "@ant-design/icons";
 
+import { useAuthState } from "store";
 import styles from "./styles.module.scss";
 
 function Message({ message, previousMessage }) {
-  const currentUserId = "activeUser";
-  // const myMessage = message.user.id == currentUserId ? true : false;
+  const user = useAuthState((state) => state.user);
+  const currentUserId = user.id;
 
   const WORD_FILE_EXTS = ["doc", "docx"];
   const POWERPOINT_FILE_EXTS = ["ppt", "pptx"];
@@ -45,7 +47,7 @@ function Message({ message, previousMessage }) {
     <div className={styles.messages}>
       {/* TEXT */}
       {/* Received Message that's Text */}
-      {message.user.id !== currentUserId && message.type === "Text" && (
+      {message.user.id !== currentUserId && message.type === "text" && (
         <div className={styles.message}>
           {/* Avatar / Margin */}
           {previousMessage ? (
@@ -55,6 +57,7 @@ function Message({ message, previousMessage }) {
               <Avatar
                 style={{ marginRight: "10px" }}
                 src={message.user.profileImage}
+                icon={<UserOutlined />}
                 size="small"
               />
             )
@@ -62,6 +65,7 @@ function Message({ message, previousMessage }) {
             <Avatar
               style={{ marginRight: "10px" }}
               src={message.user.profileImage}
+              icon={<UserOutlined />}
               size="small"
             />
           )}
@@ -74,7 +78,7 @@ function Message({ message, previousMessage }) {
       )}
 
       {/* Sent Message that's Text */}
-      {message.user.id == currentUserId && message.type === "Text" && (
+      {message.user.id == currentUserId && message.type === "text" && (
         <div className={styles.message} style={{ alignSelf: "flex-end" }}>
           {/* Message Content */}
           <div className={`${styles.messageContent} ${styles.sentMessage}`}>
@@ -89,6 +93,7 @@ function Message({ message, previousMessage }) {
               <Avatar
                 style={{ marginLeft: "10px" }}
                 src={message.user.profileImage}
+                icon={<UserOutlined />}
                 size="small"
               />
             )
@@ -96,6 +101,7 @@ function Message({ message, previousMessage }) {
             <Avatar
               style={{ marginLeft: "10px" }}
               src={message.user.profileImage}
+              icon={<UserOutlined />}
               size="small"
             />
           )}
@@ -104,22 +110,24 @@ function Message({ message, previousMessage }) {
 
       {/* ATTACHMENTS */}
       {/* Received Message that's an attachment */}
-      {message.user.id !== currentUserId && message.type === "Attachment" && (
+      {message.user.id !== currentUserId && message.type === "attachment" && (
         <div className={styles.message}>
           {previousMessage ? (
             previousMessage.user.id === message.user.id ? (
               <div style={{ width: "33px" }}></div>
             ) : (
-              <Avatar
+              <iconr
                 style={{ marginRight: "10px" }}
                 src={message.user.profileImage}
+                icon={<UserOutlined />}
                 size="small"
               />
             )
           ) : (
-            <Avatar
+            <iconr
               style={{ marginRight: "10px" }}
               src={message.user.profileImage}
+              icon={<UserOutlined />}
               size="small"
             />
           )}
@@ -230,7 +238,7 @@ function Message({ message, previousMessage }) {
       )}
 
       {/* Sent Message that's an attachment */}
-      {message.user.id == currentUserId && message.type === "Attachment" && (
+      {message.user.id == currentUserId && message.type === "attachment" && (
         <div className={styles.message} style={{ alignSelf: "flex-end" }}>
           {/* Message Content */}
           <div className={`${styles.messageContent}`}>
@@ -242,7 +250,7 @@ function Message({ message, previousMessage }) {
             )}
           </div>
 
-          {/* Avatar / Margin */}
+          {/* iconr / Margin */}
           {previousMessage ? (
             previousMessage.user.id === message.user.id ? (
               <div style={{ width: "33px" }}></div>
@@ -250,13 +258,15 @@ function Message({ message, previousMessage }) {
               <Avatar
                 style={{ marginLeft: "10px" }}
                 src={message.user.profileImage}
+                icon={<UserOutlined />}
                 size="small"
               />
             )
           ) : (
-            <Avatar
+            <iconr
               style={{ marginLeft: "10px" }}
               src={message.user.profileImage}
+              icon={<UserOutlined />}
               size="small"
             />
           )}

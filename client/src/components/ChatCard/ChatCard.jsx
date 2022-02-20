@@ -12,8 +12,9 @@ const { Text } = Typography;
 
 function ChatCard({ chat }) {
   const user = useAuthState((state) => state.user);
-  const currentChatId = useChatState((state) => state.currentChatId);
-  const activeChat = chat.id === currentChatId ? true : false;
+  const setCurrentChat = useChatState((state) => state.setCurrentChat);
+  const currentChat= useChatState((state) => state.currentChat);
+  const activeChat = chat.id === currentChat?.id ? true : false;
 
   const [readByUser, setReadByUser] = React.useState(false);
   const [chatName, setChatName] = React.useState("");
@@ -33,10 +34,11 @@ function ChatCard({ chat }) {
     }
   }, []);
 
-  console.log(chat);
-
+  const activateChat = () => {
+    setCurrentChat(chat);
+  };
   return (
-    <div className={styles.container}>
+    <div className={styles.container} onClick={activateChat}>
       {chat ? (
         <>
           {chat.type === "group" && (

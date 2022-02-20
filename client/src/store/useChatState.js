@@ -3,6 +3,8 @@ import create from 'zustand';
 const useStore = create((set) => ({
     chats: [],
     currentChatId:'',
+    currentChat: {},
+    setCurrentChat: (currentChat) => set({currentChat}),
     setCurrentChatId: (currentChatId) => set({currentChatId}),
     setChats: (chats) => set({chats})
 }))
