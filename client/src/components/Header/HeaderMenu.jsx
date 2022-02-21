@@ -1,8 +1,17 @@
 import React from "react";
-import { Menu } from "antd";
+import { useNavigate } from "react-router-dom";
+import { Menu, message } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 
-function HeaderMenu() {
+function HeaderMenu({ logout }) {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    message.success("You have been logged out.");
+    navigate("/login");
+  };
+
   return (
     <Menu>
       <Menu.Item>
@@ -32,7 +41,9 @@ function HeaderMenu() {
           3rd menu item (disabled)
         </a>
       </Menu.Item>
-      <Menu.Item danger>a danger item</Menu.Item>
+      <Menu.Item danger onClick={handleLogout}>
+        Logout
+      </Menu.Item>
     </Menu>
   );
 }

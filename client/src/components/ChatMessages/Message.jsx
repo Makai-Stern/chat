@@ -42,7 +42,6 @@ function Message({ message, previousMessage }) {
     ? message.attachment.split(/[#?]/)[0].split(".").pop().trim()
     : "";
 
-  message.attachment && console.log(filename);
   return (
     <div className={styles.messages}>
       {/* TEXT */}

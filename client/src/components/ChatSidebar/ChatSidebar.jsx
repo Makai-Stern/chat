@@ -2,8 +2,10 @@ import React from "react";
 import { Typography, Input, Button } from "antd";
 import { PlusOutlined, PushpinFilled } from "@ant-design/icons";
 
+import { useChatState } from "store";
+import { ChatService } from "services";
 import AddChatDrawer from "components/AddChatDrawer/AddChatDrawer";
-import PinnedChatsSection from "components/PinnedChatsSection/PinnedChatsSection";
+// import PinnedChatsSection from "components/PinnedChatsSection/PinnedChatsSection";
 import AllChatsSection from "components/AllChatsSection/AllChatsSection";
 import styles from "./styles.module.scss";
 
@@ -11,7 +13,9 @@ const { Title } = Typography;
 const { Search } = Input;
 
 function ChatSidebar() {
-  let chatCount = "27";
+  const chatCount = useChatState((state) => state.chatCount);
+  const setChatCount = useChatState((state) => state.setChatCount);
+
   const onSearch = (value) => console.log(value);
 
   // Chat Drawer State (state had to be outside, so that user list can be cleared)
@@ -26,6 +30,14 @@ function ChatSidebar() {
     setVisible(false);
     setUsers([]);
   };
+
+  // get chat count
+  React.useEffect(() => {
+    ChatService.getChatCount().then((response) => {
+      const { data } = response;
+      setChatCount(data);
+    });
+  }, []);
 
   return (
     <div className={styles.sidebar}>

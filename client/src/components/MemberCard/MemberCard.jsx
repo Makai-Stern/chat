@@ -1,13 +1,16 @@
 import React from "react";
 
-import { Avatar, Typography, Tag, Button, Popconfirm, message } from "antd";
-import { MessageOutlined } from "@ant-design/icons";
+import { Avatar, Typography, Tag, Button, Popconfirm } from "antd";
+import { MessageOutlined, UserOutlined } from "@ant-design/icons";
 
+import { useAuthState } from "store";
 import styles from "./styles.module.scss";
 
 const { Text } = Typography;
 
-function MemberCard({ user, style }) {
+function MemberCard({ chat, user, style }) {
+  const currentUser = useAuthState((state) => state.user);
+  console.log(chat);
   return (
     <div className={styles.memberCardContainer} style={style}>
       <div className={styles.memberCardLeft}>
@@ -15,18 +18,21 @@ function MemberCard({ user, style }) {
           src={user.profileImage}
           shape="square"
           size="large"
+          icon={<UserOutlined />}
           styles={{ borderRadius: "10px" }}
         />
 
         <div className={styles.memberCardLeftMiddle}>
           <Text style={{ fontWeight: 500 }}>
             {user.name}{" "}
-            {user.id === 1 && (
+            {user.id === chat?.owner?.id && (
               <Tag color="geekblue" style={{ marginLeft: "5px" }}>
-                Admin
+                Owner
               </Tag>
             )}
-            {user.id === 3 && <Tag style={{ marginLeft: "5px" }}>You</Tag>}
+            {user.id === currentUser?.id && (
+              <Tag style={{ marginLeft: "5px" }}>You</Tag>
+            )}
           </Text>
           <Text style={{ color: "#bfbfbf" }}>@{user.username}</Text>
         </div>

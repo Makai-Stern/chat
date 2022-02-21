@@ -54,6 +54,25 @@ def get(
     return [chat.to_dict() for chat in db_chats] if db_chats is not None else []
 
 
+@router.get("/count")
+def get_count(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(JWTBearer()),
+):
+    # get all chats user is in
+    user_id = [current_user.id]
+    db_chats = (
+        db.query(Chat)
+        .join(Chat_User)
+        .group_by(Chat.id)
+        .filter(Chat_User.c.user_id.in_(user_id))
+        .order_by(Chat.updated_at.desc())
+        .all()
+    )
+
+    return len(db_chats)
+
+
 @router.post("/")
 def post(
     db: Session = Depends(get_db),

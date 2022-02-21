@@ -12,37 +12,15 @@ import {
 } from "@ant-design/icons";
 import { Resizable } from "re-resizable";
 
+import { useChatState } from "store";
 import MemberCard from "components/MemberCard/MemberCard";
 import styles from "./styles.module.scss";
 
-const { TabPane } = Tabs;
 const { Title, Text } = Typography;
 
-const members = [
-  {
-    id: 1,
-    name: "James Roland",
-    username: "james.roland",
-    profileImage:
-      "https://images.pexels.com/photos/3771045/pexels-photo-3771045.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-  },
-  {
-    id: 2,
-    name: "Sarah Jones",
-    username: "sarah.jones",
-    profileImage:
-      "https://images.pexels.com/photos/4075524/pexels-photo-4075524.png?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-  },
-  {
-    id: 3,
-    name: "John Doe",
-    username: "john.doe",
-    profileImage:
-      "https://images.pexels.com/photos/7539488/pexels-photo-7539488.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-  },
-];
-
 function ChatPannel() {
+  const currentChat = useChatState((state) => state.currentChat);
+
   return (
     <Resizable
       className={styles.container}
@@ -58,40 +36,46 @@ function ChatPannel() {
       }}
     >
       {/* Members */}
-      <div className={styles.section} style={{ marginBottom: "50px" }}>
-        <Title
-          level={5}
-          style={{ color: "#595959", fontSize: "14px", marginBottom: "15px" }}
-        >
-          Group Image
-        </Title>
 
-        <div className={styles.chatBgImageContainer}>
-          <Image
+      {currentChat?.backgroundImage && (
+        <div className={styles.section} style={{ marginBottom: "50px" }}>
+          <Title
+            level={5}
             style={{
-              objectFit: "cover",
-              width: "100%",
-              height: "150px",
-              borderRadius: "10px",
-              marginRight: "10px",
+              color: "#595959",
+              fontSize: "14px",
+              marginBottom: "15px",
             }}
-            src={
-              "https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-            }
-          />
+          >
+            Group Image
+          </Title>
+          <div className={styles.chatBgImageContainer}>
+            <Image
+              style={{
+                objectFit: "cover",
+                width: "100%",
+                height: "150px",
+                borderRadius: "10px",
+                marginRight: "10px",
+              }}
+              src={currentChat.backgroundImage}
+            />
+          </div>
         </div>
-      </div>
+      )}
       {/* Members */}
       <div className={styles.section} style={{ marginBottom: "50px" }}>
         <Title level={5} style={{ color: "#595959", fontSize: "14px" }}>
           Members
         </Title>
 
-        <div>
-          {members.map((user) => (
-            <MemberCard key={user.id} user={user} />
-          ))}
-        </div>
+        {currentChat?.users?.length > 0 && (
+          <div className={styles.members}>
+            {currentChat.users.map((user) => (
+              <MemberCard chat={currentChat} key={user.id} user={user} />
+            ))}
+          </div>
+        )}
       </div>
 
       <div className={styles.section}>

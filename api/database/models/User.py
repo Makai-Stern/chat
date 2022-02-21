@@ -19,7 +19,9 @@ class User(Base):
 
     __tablename__ = "users"
 
-    id = Column("id", Text(length=36), default=lambda: str(uuid.uuid4()), primary_key=True)
+    id = Column(
+        "id", Text(length=36), default=lambda: str(uuid.uuid4()), primary_key=True
+    )
     # User Credentials
     email = Column(String, index=True, unique=True)
     name = Column(String)
@@ -33,22 +35,40 @@ class User(Base):
 
     """Relationships"""
     # invites relationship (not implemented yet)
-    invites_sent = relationship("Invite", back_populates="user", primaryjoin="Invite.user_id == User.id", cascade="all,delete")
-    invites_received = relationship("Invite", back_populates="invited_user", primaryjoin="Invite.invited_user_id == User.id", cascade="all,delete")
+    invites_sent = relationship(
+        "Invite",
+        back_populates="user",
+        primaryjoin="Invite.user_id == User.id",
+        cascade="all,delete",
+    )
+    invites_received = relationship(
+        "Invite",
+        back_populates="invited_user",
+        primaryjoin="Invite.invited_user_id == User.id",
+        cascade="all,delete",
+    )
     # messages relationship
-    messages = relationship("Message", back_populates="user", lazy="dynamic", cascade="all,delete")
+    messages = relationship(
+        "Message", back_populates="user", lazy="dynamic", cascade="all,delete"
+    )
     # readyby relationship
-    read_messages = relationship("Readby", back_populates='user')
+    read_messages = relationship("Readby", back_populates="user")
     # attachments relationship
-    attachments = relationship("Attachment", back_populates="user", lazy="dynamic", cascade="all,delete")
+    attachments = relationship(
+        "Attachment", back_populates="user", lazy="dynamic", cascade="all,delete"
+    )
     # chats_owneds relationship
-    chats_owned = relationship("Chat", back_populates="owner", lazy="dynamic", cascade="all,delete")
+    chats_owned = relationship(
+        "Chat", back_populates="owner", lazy="dynamic", cascade="all,delete"
+    )
     # chats relationship
     chats = relationship("Chat", secondary=Chat_User, back_populates="users")
 
     # timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), default=func.now(), onupdate=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), default=func.now(), onupdate=func.now()
+    )
 
     def update_image(self, type, image):
         """
@@ -103,12 +123,12 @@ class User(Base):
             id=self.id,
             username=self.username,
             bio=self.bio,
-            profile_img=f"{DOMAIN}{self.profile_img}" if self.profile_img else None,
+            profileImage=f"{DOMAIN}{self.profile_img}" if self.profile_img else None,
             # background_img=f"{DOMAIN}{self.background_img}" if self.background_img else None,
             name=self.name,
             email=self.email,
-            created_at=self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            updated_at=self.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
+            createdAt=self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            updatedAt=self.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
     class Config:

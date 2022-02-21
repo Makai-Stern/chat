@@ -8,9 +8,10 @@
 }
 
 .messagesContainer {
+  scroll-behavior: smooth;
   padding-top: 60px;
   max-height: calc(100vh - 185px);
-  overflow-y: scroll;
+  overflow: scroll;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
@@ -19,9 +20,18 @@
   display: none;
 }
 
+.messages::-webkit-scrollbar {
+  display: none;
+}
+
 .messages {
   display: flex;
   flex-direction: column;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  flex-direction: column-reverse;
+  overflow: scroll;
 }
 
 .message {

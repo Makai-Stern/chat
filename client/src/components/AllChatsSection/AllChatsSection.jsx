@@ -15,6 +15,7 @@ function AllChatsSection() {
   const currentChatId = useChatState((state) => state.currentChatId);
   // const setCurrentChatId = useChatState((state) => state.setCurrentChatId);
   const setCurrentChat = useChatState((state) => state.setCurrentChat);
+  const FETCH_NUM = 20;
 
   const [loading, setLoading] = React.useState(false);
   const [data, setData] = React.useState([]);
@@ -24,13 +25,13 @@ function AllChatsSection() {
       return;
     }
     setLoading(true);
-    const { data: chats } = await ChatService.getAll(page, 20);
+    const { data: chats } = await ChatService.getAll(page, FETCH_NUM);
     if (chats.length > 0) {
       setData((prevChats) => [...prevChats, ...chats]);
       setPage((prevPage) => prevPage + 1);
 
       if (!currentChatId) {
-        const firstChat = chats[0]
+        const firstChat = chats[0];
         setCurrentChat(firstChat);
         // setCurrentChatId(firstChat.id);
       }
@@ -50,8 +51,7 @@ function AllChatsSection() {
         <div
           id="scrollableDiv"
           style={{
-            height: "100%",
-            overflow: "auto",
+            height: "calc(100vh - 150px)",
           }}
         >
           {data.length > 0 ? (

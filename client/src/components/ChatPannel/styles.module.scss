@@ -11,6 +11,17 @@
   margin-bottom: 30px;
 }
 
+.members {
+  max-height: "300px";
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.members::-webkit-scrollbar {
+  display: none;
+}
+
 .chatBgImageContainer {
   width: 100%;
 
