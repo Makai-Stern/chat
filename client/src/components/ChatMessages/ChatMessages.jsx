@@ -93,6 +93,10 @@ function ChatMessages() {
     setIsLoading(false);
   };
 
+  const addMessages = (messages) => {
+    // message can be an obj or a list
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.chatName}>

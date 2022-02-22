@@ -9,7 +9,7 @@ import {
   FileWordTwoTone,
   FilePptTwoTone,
   FileZipTwoTone,
-  UserOutlined
+  UserOutlined,
 } from "@ant-design/icons";
 
 import { useAuthState } from "store";
@@ -35,12 +35,18 @@ function Message({ message, previousMessage }) {
     "xlsb",
   ];
 
-  let filename = message.attachment
-    ? message.attachment.split("/").pop().split("?")[0]
-    : "";
+  // let filename = message.attachment
+  //   ? message.attachment?.split("/").pop().split("?")[0]
+  //   : "";
+  // let fileExtension = message.attachment
+  //   ? message.attachment.split(/[#?]/)[0].split(".").pop().trim()
+  //   : "";
+
+  let filename = message.attachment ? message.attachment?.name : "";
   let fileExtension = message.attachment
-    ? message.attachment.split(/[#?]/)[0].split(".").pop().trim()
+    ? message.attachment?.name.split(/[#?]/)[0].split(".").pop().trim()
     : "";
+  let fileLocation = message.attachment ? message.attachment?.file : "";
 
   return (
     <div className={styles.messages}>
@@ -134,10 +140,7 @@ function Message({ message, previousMessage }) {
           <div className={`${styles.messageContent}`}>
             {/* Images */}
             {IMAGE_FILE_EXTS.includes(fileExtension) && (
-              <Image
-                className={styles.imageAttachment}
-                src={message.attachment}
-              />
+              <Image className={styles.imageAttachment} src={fileLocation} />
             )}
 
             {/* PDF */}
@@ -175,7 +178,6 @@ function Message({ message, previousMessage }) {
                 {filename}
               </div>
             )}
-
 
             {/* Power Point */}
             {POWERPOINT_FILE_EXTS.includes(fileExtension) && (
@@ -221,7 +223,7 @@ function Message({ message, previousMessage }) {
               ...ZIP_FILE_EXTS,
               ...TEXT_FILE_EXTS,
               ...EXCEL_FILE_EXTS,
-              ...POWERPOINT_FILE_EXTS
+              ...POWERPOINT_FILE_EXTS,
             ].includes(fileExtension) && (
               <div
                 className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
@@ -242,10 +244,7 @@ function Message({ message, previousMessage }) {
           {/* Message Content */}
           <div className={`${styles.messageContent}`}>
             {["jpg", "png", "jpeg"].includes(fileExtension) && (
-              <Image
-                className={styles.imageAttachment}
-                src={message.attachment}
-              />
+              <Image className={styles.imageAttachment} src={fileLocation} />
             )}
           </div>
 
