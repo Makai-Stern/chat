@@ -254,7 +254,7 @@ def get_messages(
         db_chat_messages = (
             db.query(Message)
             .filter(Message.chat_id == db_chat.id)
-            .order_by(Message.created_at.desc())
+            .order_by(Message.created_at.asc())
             .offset(skip)
             .limit(limit)
             .all()
@@ -265,7 +265,7 @@ def get_messages(
         db_chat_messages = (
             db.query(Message)
             .filter(Message.chat_id == db_chat.id)
-            .order_by(Message.created_at.desc())
+            .order_by(Message.created_at.asc())
             .all()
         )
 
@@ -304,6 +304,7 @@ def get_messages(
             new_item = item[key]
             response.append({new_key: new_item})
 
+    response.reverse()
     return response
 
 
