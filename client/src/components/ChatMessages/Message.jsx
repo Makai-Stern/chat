@@ -1,6 +1,7 @@
 import React from "react";
 
-import { Avatar, Image } from "antd";
+import axios from "axios";
+import { Avatar, Image, message as alert } from "antd";
 import {
   FilePdfTwoTone,
   FileTextTwoTone,
@@ -47,6 +48,28 @@ function Message({ message, previousMessage }) {
     ? message.attachment?.name.split(/[#?]/)[0].split(".").pop().trim()
     : "";
   let fileLocation = message.attachment ? message.attachment?.file : "";
+  console.log(filename);
+
+  const handleDownload = (url, name = null) => {
+    name
+      ? alert.info(`Downloading "${name}"`)
+      : alert.info(`Downloading file...`);
+    axios
+      .get(url, {
+        responseType: "blob",
+      })
+      .then((response) => {
+        // if filename is not set, get filename from url
+        const filename = name ? name : url.substring(url.lastIndexOf("/") + 1);
+        let blob = new Blob([response.data], { type: response.data.type });
+        let link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        link.remove();
+        alert.success(`Downloaded "${filename}"`);
+      });
+  };
 
   return (
     <div className={styles.messages}>
@@ -121,7 +144,7 @@ function Message({ message, previousMessage }) {
             previousMessage.user.id === message.user.id ? (
               <div style={{ width: "33px" }}></div>
             ) : (
-              <iconr
+              <Avatar
                 style={{ marginRight: "10px" }}
                 src={message.user.profileImage}
                 icon={<UserOutlined />}
@@ -129,7 +152,7 @@ function Message({ message, previousMessage }) {
               />
             )
           ) : (
-            <iconr
+            <Avatar
               style={{ marginRight: "10px" }}
               src={message.user.profileImage}
               icon={<UserOutlined />}
@@ -243,8 +266,103 @@ function Message({ message, previousMessage }) {
         <div className={styles.message} style={{ alignSelf: "flex-end" }}>
           {/* Message Content */}
           <div className={`${styles.messageContent}`}>
-            {["jpg", "png", "jpeg"].includes(fileExtension) && (
+            {/* Images */}
+            {IMAGE_FILE_EXTS.includes(fileExtension) && (
               <Image className={styles.imageAttachment} src={fileLocation} />
+            )}
+
+            {/* PDF */}
+            {PDF_FILE_EXTS.includes(fileExtension) && (
+              <div
+                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
+              >
+                <FilePdfTwoTone
+                  style={{ marginRight: "5px", fontSize: "20px" }}
+                />
+                {filename}
+              </div>
+            )}
+
+            {/* Text */}
+            {TEXT_FILE_EXTS.includes(fileExtension) && (
+              <div
+                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
+              >
+                <FileTextTwoTone
+                  style={{ marginRight: "5px", fontSize: "20px" }}
+                />
+                {filename}
+              </div>
+            )}
+
+            {/* Word */}
+            {WORD_FILE_EXTS.includes(fileExtension) && (
+              <div
+                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
+              >
+                <FileWordTwoTone
+                  style={{ marginRight: "5px", fontSize: "20px" }}
+                />
+                {filename}
+              </div>
+            )}
+
+            {/* Power Point */}
+            {POWERPOINT_FILE_EXTS.includes(fileExtension) && (
+              <div
+                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
+              >
+                <FilePptTwoTone
+                  style={{ marginRight: "5px", fontSize: "20px" }}
+                />
+                {filename}
+              </div>
+            )}
+
+            {/* Zip */}
+            {ZIP_FILE_EXTS.includes(fileExtension) && (
+              <div
+                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
+              >
+                <FileZipTwoTone
+                  style={{ marginRight: "5px", fontSize: "20px" }}
+                />
+                {filename}
+              </div>
+            )}
+
+            {/* Excel */}
+            {EXCEL_FILE_EXTS.includes(fileExtension) && (
+              <div
+                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
+              >
+                <FileExcelTwoTone
+                  style={{ marginRight: "5px", fontSize: "20px" }}
+                />
+                <a onClick={() => handleDownload(fileLocation, filename)}>
+                  {filename}
+                </a>
+              </div>
+            )}
+
+            {/* Unknown */}
+            {![
+              ...IMAGE_FILE_EXTS,
+              ...WORD_FILE_EXTS,
+              ...PDF_FILE_EXTS,
+              ...ZIP_FILE_EXTS,
+              ...TEXT_FILE_EXTS,
+              ...EXCEL_FILE_EXTS,
+              ...POWERPOINT_FILE_EXTS,
+            ].includes(fileExtension) && (
+              <div
+                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
+              >
+                <FileUnknownTwoTone
+                  style={{ marginRight: "5px", fontSize: "20px" }}
+                />
+                {filename}
+              </div>
             )}
           </div>
 
@@ -261,7 +379,7 @@ function Message({ message, previousMessage }) {
               />
             )
           ) : (
-            <iconr
+            <Avatar
               style={{ marginLeft: "10px" }}
               src={message.user.profileImage}
               icon={<UserOutlined />}

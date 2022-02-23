@@ -52,7 +52,10 @@ function Header() {
           <Divider style={{ borderColor: "#CDCDCD" }} type="vertical" />
 
           <Dropdown overlay={() => <HeaderMenu logout={logout} />}>
-            <a style={{ color: "#434343" }} onClick={(e) => e.preventDefault()}>
+            <a
+              style={{ color: "#434343", fontWeight: "500" }}
+              onClick={(e) => e.preventDefault()}
+            >
               <span>{user?.name}</span> <DownOutlined />
             </a>
           </Dropdown>

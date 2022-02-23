@@ -21,6 +21,9 @@ function ChatMessages() {
   const [page, setPage] = React.useState(1);
   const [hasMore, setHasMore] = React.useState(true);
   const [data, setData] = React.useState([]);
+  const [attachments, setAttachments] = React.useState([]);
+  // files for chat input
+  const [files, setFiles] = React.useState([]);
 
   const FETCH_NUM = 20;
 
@@ -95,6 +98,20 @@ function ChatMessages() {
 
   const addMessages = (messages) => {
     // message can be an obj or a list
+  };
+
+  const handleFileRemove = (index) => {
+    let currentFiles = [...files];
+    currentFiles.splice(index, 1);
+    setFiles(currentFiles);
+  };
+
+  const handleFileChange = (e) => {
+    const newFiles = e.target.files;
+    if (newFiles) {
+      setFiles((prevFiles) => [...newFiles, ...prevFiles]);
+    }
+    console.log(newFiles);
   };
 
   return (
@@ -178,7 +195,13 @@ function ChatMessages() {
           </div>
         )}
       </div>
-      <ChatInput />
+      <ChatInput
+        addMessages={addMessages}
+        handleFileRemove={handleFileRemove}
+        handleFileChange={handleFileChange}
+        setAttachments={setAttachments}
+        files={files}
+      />
     </div>
   );
 }
