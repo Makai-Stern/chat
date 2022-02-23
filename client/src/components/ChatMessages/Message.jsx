@@ -142,7 +142,7 @@ function Message({ message, previousMessage }) {
         <div className={styles.message}>
           {previousMessage ? (
             previousMessage.user.id === message.user.id ? (
-              <div style={{ width: "33px" }}></div>
+              <div style={{ width: "26px" }}></div>
             ) : (
               <Avatar
                 style={{ marginRight: "10px" }}
