@@ -10,7 +10,7 @@ const { Text } = Typography;
 
 function MemberCard({ chat, user, style }) {
   const currentUser = useAuthState((state) => state.user);
-  console.log(chat);
+
   return (
     <div className={styles.memberCardContainer} style={style}>
       <div className={styles.memberCardLeft}>

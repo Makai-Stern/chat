@@ -254,7 +254,7 @@ def get_messages(
         db_chat_messages = (
             db.query(Message)
             .filter(Message.chat_id == db_chat.id)
-            .order_by(Message.created_at.asc())
+            .order_by(Message.created_at.desc())
             .offset(skip)
             .limit(limit)
             .all()
@@ -265,7 +265,7 @@ def get_messages(
         db_chat_messages = (
             db.query(Message)
             .filter(Message.chat_id == db_chat.id)
-            .order_by(Message.created_at.asc())
+            .order_by(Message.created_at.desc())
             .all()
         )
 
@@ -283,29 +283,31 @@ def get_messages(
     data = []
     messages = [message.to_dict() for message in db_chat_messages]
 
-    for message in messages:
-        key_exists = False
-        key = message["day"]
+    # for message in messages:
+    #     key_exists = False
+    #     key = message["day"]
 
-        for item in data:
-            if key in item:
-                key_exists = True
-                item[key].append(message)
+    #     for item in data:
+    #         if key in item:
+    #             key_exists = True
+    #             item[key].append(message)
 
-        if not key_exists:
-            item = {key: [message]}
-            data.append(item)
+    #     if not key_exists:
+    #         item = {key: [message]}
+    #         data.append(item)
 
-    # update keys to include earliest time (Hr & Minute)
-    for item in data:
-        for key in item:
-            new_key = item[key][0]["dayWithHour"]
-            # item[new_key] = item.pop(key)
-            new_item = item[key]
-            response.append({new_key: new_item})
+    # # update keys to include earliest time (Hr & Minute)
+    # for item in data:
+    #     for key in item:
+    #         new_key = item[key][0]["dayWithHour"]
+    #         # item[new_key] = item.pop(key)
+    #         new_item = item[key]
+    #         response.append({new_key: new_item})
 
-    response.reverse()
-    return response
+    # response.reverse()
+    # return response
+
+    return messages
 
 
 @router.get("/{id}/attachments")
@@ -343,8 +345,8 @@ def get_attachments(
         skip = (page - 1) * limit
 
         db_chat_attachments = (
-            db.query(Message_Attachment)
-            .join(Message_Attachment, Message, Attachment)
+            db.query(Attachment)
+            .join(Message, Attachment)
             .filter(Message.chat_id == id)
             .filter(Message.chat_id == id)
             .order_by(Attachment.created_at.desc())
@@ -356,19 +358,15 @@ def get_attachments(
     else:
         # Get all messages in the chat
         db_chat_attachments = (
-            db.query(Message_Attachment, Message, Attachment)
-            .join(Message, Attachment)
-            .filter(Message.chat_id == id)
-            .filter(Message.chat_id == id)
+            db.query(Attachment)
+            .join(Message)
+            .filter(Message.chat_id == id, Message.attachment_id == Attachment.id)
             .order_by(Message.created_at.desc())
             .all()
         )
 
     attachments = []
-    for result in db_chat_attachments:
-        print(result.Message)
-        # db_attachment = db.query(Attachment).filter(Attachment.id == result.attachment_id).first()
-        # attachments.append(db_attachment.to_dict()) if db_attachment else None
-        attachments.append(result.Attachment.to_dict())
+    for attachment in db_chat_attachments:
+        attachments.append(attachment.to_dict())
 
     return attachments

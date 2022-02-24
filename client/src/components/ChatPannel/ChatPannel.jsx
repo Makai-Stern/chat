@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Typography, Tabs, Image, Button } from "antd";
+import { Typography, Image } from "antd";
 import {
   FilePdfTwoTone,
   FileTextTwoTone,
@@ -12,14 +12,45 @@ import {
 } from "@ant-design/icons";
 import { Resizable } from "re-resizable";
 
+import {
+  WORD_FILE_EXTS,
+  POWERPOINT_FILE_EXTS,
+  IMAGE_FILE_EXTS,
+  PDF_FILE_EXTS,
+  ZIP_FILE_EXTS,
+  TEXT_FILE_EXTS,
+  EXCEL_FILE_EXTS,
+} from "store/constants";
+import { ChatService } from "services";
 import { useChatState } from "store";
 import MemberCard from "components/MemberCard/MemberCard";
 import styles from "./styles.module.scss";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 function ChatPannel() {
   const currentChat = useChatState((state) => state.currentChat);
+  const currentAttachments = useChatState((state) => state.currentAttachments);
+  const setCurrentAttachments = useChatState(
+    (state) => state.setCurrentAttachments
+  );
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsLoading(true);
+
+    if (currentChat?.id) {
+      ChatService.getAttachments(currentChat.id).then((response) => {
+        const { data } = response;
+        setCurrentAttachments(data);
+        console.log(data);
+      });
+    } else {
+      setCurrentAttachments([]);
+    }
+
+    setIsLoading(false);
+  }, [currentChat?.id]);
 
   return (
     <Resizable
@@ -36,7 +67,6 @@ function ChatPannel() {
       }}
     >
       {/* Members */}
-
       {currentChat?.backgroundImage && (
         <div className={styles.section} style={{ marginBottom: "50px" }}>
           <Title
@@ -82,6 +112,8 @@ function ChatPannel() {
         <Title level={5} style={{ color: "#595959", fontSize: "14px" }}>
           Attachments
         </Title>
+
+        {/* test */}
         <div
           style={{
             marginTop: "15px",
@@ -90,57 +122,171 @@ function ChatPannel() {
             gap: "12px",
           }}
         >
-          <Image
-            src={
-              "https://images.pexels.com/photos/10533350/pexels-photo-10533350.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
-            }
-            style={{
-              objectFit: "cover",
-              width: "70px",
-              height: "70px",
-              borderRadius: "10px",
-            }}
-          />
-          <div
-            style={{
-              width: "70px",
-              height: "70px",
-              background: "#fafafa",
-              borderRadius: "10px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "1px solid #f5f5f5",
-            }}
-          >
-            <FilePdfTwoTone style={{ fontSize: "25px" }} />
-          </div>
-          <Image
-            src={
-              "https://images.pexels.com/photos/9986405/pexels-photo-9986405.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-            }
-            style={{
-              objectFit: "cover",
-              width: "70px",
-              height: "70px",
-              borderRadius: "10px",
-            }}
-          />
+          {currentAttachments.map((attachment) => (
+            <div key={attachment.id}>
+              {IMAGE_FILE_EXTS.includes(
+                attachment.name.split(/[#?]/)[0].split(".").pop().trim()
+              ) && (
+                <Image
+                  src={attachment.file}
+                  style={{
+                    objectFit: "cover",
+                    width: "70px",
+                    height: "70px",
+                    borderRadius: "10px",
+                  }}
+                />
+              )}
 
-          <div
-            style={{
-              width: "70px",
-              height: "70px",
-              // background: "#fdfdfd",
-              borderRadius: "10px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "1px dashed #ede6e6",
-            }}
-          >
-            <Text style={{ fontWeight: 500 }}>+7</Text>
-          </div>
+              {/* PDF */}
+              {PDF_FILE_EXTS.includes(
+                attachment.name.split(/[#?]/)[0].split(".").pop().trim()
+              ) && (
+                <div
+                  style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "#fafafa",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid #f5f5f5",
+                  }}
+                >
+                  <FilePdfTwoTone style={{ fontSize: "25px" }} />
+                </div>
+              )}
+
+              {/* Text */}
+              {TEXT_FILE_EXTS.includes(
+                attachment.name.split(/[#?]/)[0].split(".").pop().trim()
+              ) && (
+                <div
+                  style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "#fafafa",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid #f5f5f5",
+                  }}
+                >
+                  <FileTextTwoTone style={{ fontSize: "25px" }} />
+                </div>
+              )}
+
+              {/* Word */}
+              {WORD_FILE_EXTS.includes(
+                attachment.name.split(/[#?]/)[0].split(".").pop().trim()
+              ) && (
+                <div
+                  style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "#fafafa",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid #f5f5f5",
+                  }}
+                >
+                  <FileWordTwoTone style={{ fontSize: "25px" }} />
+                </div>
+              )}
+
+              {/* Power Point */}
+              {POWERPOINT_FILE_EXTS.includes(
+                attachment.name.split(/[#?]/)[0].split(".").pop().trim()
+              ) && (
+                <div
+                  style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "#fafafa",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid #f5f5f5",
+                  }}
+                >
+                  <FilePptTwoTone style={{ fontSize: "25px" }} />
+                </div>
+              )}
+
+              {/* Zip */}
+              {ZIP_FILE_EXTS.includes(
+                attachment.name.split(/[#?]/)[0].split(".").pop().trim()
+              ) && (
+                <div
+                  style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "#fafafa",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid #f5f5f5",
+                  }}
+                >
+                  <FileZipTwoTone style={{ fontSize: "25px" }} />
+                </div>
+              )}
+
+              {/* Excel */}
+              {EXCEL_FILE_EXTS.includes(
+                attachment.name.split(/[#?]/)[0].split(".").pop().trim()
+              ) && (
+                <div
+                  style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "#fafafa",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid #f5f5f5",
+                  }}
+                >
+                  <FileExcelTwoTone style={{ fontSize: "25px" }} />
+                </div>
+              )}
+
+              {/* Unknown */}
+              {![
+                ...IMAGE_FILE_EXTS,
+                ...WORD_FILE_EXTS,
+                ...PDF_FILE_EXTS,
+                ...ZIP_FILE_EXTS,
+                ...TEXT_FILE_EXTS,
+                ...EXCEL_FILE_EXTS,
+                ...POWERPOINT_FILE_EXTS,
+              ].includes(
+                attachment.name.split(/[#?]/)[0].split(".").pop().trim()
+              ) && (
+                <div
+                  style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "#fafafa",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid #f5f5f5",
+                  }}
+                >
+                  <FileUnknownTwoTone style={{ fontSize: "25px" }} />
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </Resizable>

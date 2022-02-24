@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Input, Button, message, Typography } from "antd";
-import { PaperClipOutlined, SendOutlined } from "@ant-design/icons";
+import { SendOutlined } from "@ant-design/icons";
 
 import { MessageService } from "services";
 import { useChatState } from "store";
@@ -20,7 +20,7 @@ function ChatInput({
   addMessages,
   handleFileRemove,
   handleFileChange,
-  setAttachmets,
+  addAttachmets,
   files,
   setFiles,
 }) {
@@ -58,7 +58,7 @@ function ChatInput({
       // socket.emit('addMessage', message)
       // add files to currentChat
       if (files.length > 0) {
-        setAttachmets((prevAttachments) => [...files, ...prevAttachments]);
+        addAttachmets(files);
       }
       // Reset the state
       setText("");

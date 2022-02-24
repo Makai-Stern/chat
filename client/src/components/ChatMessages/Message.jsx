@@ -1,6 +1,7 @@
 import React from "react";
 
 import axios from "axios";
+import moment from "moment";
 import { Avatar, Image, message as alert } from "antd";
 import {
   FilePdfTwoTone,
@@ -13,35 +14,32 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
+import {
+  WORD_FILE_EXTS,
+  POWERPOINT_FILE_EXTS,
+  IMAGE_FILE_EXTS,
+  PDF_FILE_EXTS,
+  ZIP_FILE_EXTS,
+  TEXT_FILE_EXTS,
+  EXCEL_FILE_EXTS,
+} from "store/constants";
 import { useAuthState } from "store";
 import styles from "./styles.module.scss";
 
 function Message({ message, previousMessage }) {
   const user = useAuthState((state) => state.user);
   const currentUserId = user.id;
+  const date = moment(message.createdAt).format("MMMM Do YYYY, h:mm:ss a");
 
-  const WORD_FILE_EXTS = ["doc", "docx"];
-  const POWERPOINT_FILE_EXTS = ["ppt", "pptx"];
-  const IMAGE_FILE_EXTS = ["jpeg", "jpg", "png", "gif", "bmp", "tiff"];
-  const PDF_FILE_EXTS = ["pdf"];
-  const ZIP_FILE_EXTS = ["zip", "7z"];
-  const TEXT_FILE_EXTS = ["txt"];
-  const EXCEL_FILE_EXTS = [
-    "xls",
-    "csv",
-    "xlsx",
-    "xlsm",
-    "xltm",
-    "xltx",
-    "xlsb",
-  ];
+  const showDate = previousMessage
+    ? moment(message.createdAt).isBefore(
+        previousMessage.createdAt,
+        "day",
+        "year"
+      )
+    : true;
 
-  // let filename = message.attachment
-  //   ? message.attachment?.split("/").pop().split("?")[0]
-  //   : "";
-  // let fileExtension = message.attachment
-  //   ? message.attachment.split(/[#?]/)[0].split(".").pop().trim()
-  //   : "";
+  console.log(showDate);
 
   let filename = message.attachment ? message.attachment?.name : "";
   let fileExtension = message.attachment
@@ -387,6 +385,20 @@ function Message({ message, previousMessage }) {
             />
           )}
         </div>
+      )}
+
+      {showDate && (
+        <h5
+          style={{
+            width: "100%",
+            textAlign: "center",
+            color: "#8c8c8c",
+            marginTop: "30px",
+            marginBottom: "20px",
+          }}
+        >
+          {date}
+        </h5>
       )}
     </div>
   );

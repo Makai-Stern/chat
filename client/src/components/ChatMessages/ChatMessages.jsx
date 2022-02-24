@@ -21,9 +21,6 @@ function ChatMessages() {
   const [page, setPage] = React.useState(1);
   const [hasMore, setHasMore] = React.useState(true);
   const [data, setData] = React.useState([]);
-  const [attachments, setAttachments] = React.useState([]);
-  // files for chat input
-  const [files, setFiles] = React.useState([]);
 
   const FETCH_NUM = 20;
 
@@ -44,17 +41,13 @@ function ChatMessages() {
     }
     if (currentChat?.type === "group") setChatTitle(currentChat.name);
 
-    if (currentChat.id) {
-      ChatService.getMessages(currentChat.id, 1, FETCH_NUM).then((resposne) => {
-        const { data: messages } = resposne;
+    ChatService.getMessages(currentChat.id, 1, FETCH_NUM).then((resposne) => {
+      const { data: messages } = resposne;
 
-        if (messages instanceof Array) {
-          if (messages.length > 0) {
-            setData(messages);
-          }
-        }
-      });
-    }
+      if (messages.length > 0) {
+        setData(messages);
+      }
+    });
 
     setIsLoading(false);
     setPage((prevPage) => prevPage + 1);
@@ -96,58 +89,42 @@ function ChatMessages() {
     setIsLoading(false);
   };
 
-  const addMessages = (messages) => {
-    // message can be an obj or a list
-  };
-
-  const handleFileRemove = (index) => {
-    let currentFiles = [...files];
-    currentFiles.splice(index, 1);
-    setFiles(currentFiles);
-  };
-
-  const handleFileChange = (e) => {
-    const newFiles = e.target.files;
-    if (newFiles) {
-      setFiles((prevFiles) => [...newFiles, ...prevFiles]);
-    }
-    console.log(newFiles);
-  };
-
   return (
     <div className={styles.container}>
       <div className={styles.chatName}>
-        {currentChat?.type === "group" && (
-          <Title
-            level={3}
-            editable={{
-              icon: <EditTwoTone style={{ fontSize: "18px" }} />,
-              tooltip: "click to edit text",
-              onChange: changeChatTitle,
-            }}
-          >
-            {chatTitle}
-          </Title>
-        )}
-
-        {currentChat?.type === "single" && <Title level={3}>{chatTitle}</Title>}
+        <Title
+          level={3}
+          style={
+            {
+              // marginBottom: "60px",
+            }
+          }
+          editable={{
+            icon: <EditTwoTone style={{ fontSize: "18px" }} />,
+            tooltip: "click to edit text",
+            onChange: changeChatTitle,
+          }}
+        >
+          {chatTitle}
+        </Title>
       </div>
 
-      <div className={styles.messagesContainer}>
+      <div className={styles.messagesContainer} id="scrollableDiv">
         {isLoading ? (
           <div style={{ width: "100%", padding: "20px" }}>
             <Skeleton active />
           </div>
         ) : (
           <div
-            id="scrollableDiv"
             style={{
               height: "100%",
+              overflow: "auto",
             }}
             className={styles.messages}
           >
             {data.length > 0 ? (
               <InfiniteScroll
+                userWindow={false}
                 scrollableTarget="scrollableDiv"
                 dataLength={data.length}
                 next={loadMoreData}
@@ -157,30 +134,14 @@ function ChatMessages() {
                 loader={<Skeleton paragraph={{ rows: 1 }} active />}
               >
                 {data &&
-                  data.map((container, i) => {
-                    let key = Object.keys(container)[0];
+                  data.map((message, i) => {
                     return (
-                      <div key={i}>
-                        <h5
-                          style={{
-                            width: "100%",
-                            textAlign: "center",
-                            color: "#8c8c8c",
-                            marginTop: "30px",
-                            marginBottom: "20px",
-                          }}
-                        >
-                          {key}
-                        </h5>
-
-                        {container[key].map((message, i) => (
-                          // Check message type
-                          <Message
-                            previousMessage={container[key][i - 1]}
-                            key={i}
-                            message={message}
-                          />
-                        ))}
+                      <div>
+                        <Message
+                          previousMessage={data[i - 1]}
+                          key={i}
+                          message={message}
+                        />
                       </div>
                     );
                   })}
@@ -195,13 +156,7 @@ function ChatMessages() {
           </div>
         )}
       </div>
-      <ChatInput
-        addMessages={addMessages}
-        handleFileRemove={handleFileRemove}
-        handleFileChange={handleFileChange}
-        setAttachments={setAttachments}
-        files={files}
-      />
+      <ChatInput />
     </div>
   );
 }
