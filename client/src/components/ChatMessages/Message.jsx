@@ -29,7 +29,7 @@ import styles from "./styles.module.scss";
 function Message({ message, previousMessage }) {
   const user = useAuthState((state) => state.user);
   const currentUserId = user.id;
-  const date = moment(message.createdAt).format("MMMM Do YYYY, h:mm:ss a");
+  const date = moment(message.createdAt).format("MMMM Do YYYY, h:mm a");
 
   const showDate = previousMessage
     ? moment(message.createdAt).isBefore(
@@ -38,8 +38,6 @@ function Message({ message, previousMessage }) {
         "year"
       )
     : true;
-
-  console.log(showDate);
 
   let filename = message.attachment ? message.attachment?.name : "";
   let fileExtension = message.attachment

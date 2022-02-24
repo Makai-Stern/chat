@@ -1,8 +1,7 @@
 import React from "react";
 
-import { Typography, Skeleton } from "antd";
+import { Typography, Skeleton, Spin } from "antd";
 import { EditTwoTone } from "@ant-design/icons";
-import InfiniteScroll from "react-infinite-scroll-component";
 
 import { useChatState } from "store";
 import { useAuthState } from "store";
@@ -20,9 +19,10 @@ function ChatMessages() {
   const [chatTitle, setChatTitle] = React.useState("");
   const [page, setPage] = React.useState(1);
   const [hasMore, setHasMore] = React.useState(true);
+  const [showChatLoader, setShowChatLoader] = React.useState(false);
   const [data, setData] = React.useState([]);
 
-  const FETCH_NUM = 20;
+  const FETCH_NUM = 15;
 
   React.useEffect(() => {
     setPage(1);
@@ -39,15 +39,20 @@ function ChatMessages() {
       setChatTitle(recipient.name);
       // setSingleChatImage(recipient.profileImage);
     }
+
     if (currentChat?.type === "group") setChatTitle(currentChat.name);
 
-    ChatService.getMessages(currentChat.id, 1, FETCH_NUM).then((resposne) => {
-      const { data: messages } = resposne;
+    if (currentChat?.id) {
+      ChatService.getMessages(currentChat.id, 1, FETCH_NUM).then((resposne) => {
+        const { data: messages } = resposne;
 
-      if (messages.length > 0) {
-        setData(messages);
-      }
-    });
+        if (messages instanceof Array) {
+          if (messages.length > 0) {
+            setData(messages);
+          }
+        }
+      });
+    }
 
     setIsLoading(false);
     setPage((prevPage) => prevPage + 1);
@@ -66,12 +71,11 @@ function ChatMessages() {
   };
 
   const loadMoreData = async () => {
-    alert("Loading More Messages!");
-    if (isLoading) {
+    if (isLoading || showChatLoader) {
       return;
     }
 
-    setIsLoading(true);
+    setShowChatLoader(true);
     const { data: messages } = await ChatService.getMessages(
       currentChat.id,
       page,
@@ -86,52 +90,86 @@ function ChatMessages() {
       }
     }
 
-    setIsLoading(false);
+    setShowChatLoader(false);
+  };
+
+  const handleScroll = async (e) => {
+    // const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+    // if (bottom) {}
+    // need state to see last scroll direction, so that if user is still at top the request wont go until the user scrolls on top again
+
+    if (hasMore) {
+      const top =
+        e.target.scrollHeight + e.target.scrollTop === e.target.clientHeight ||
+        e.target.scrollHeight + e.target.scrollTop - 500 <
+          e.target.clientHeight ||
+        e.target.scrollHeight + e.target.scrollTop ===
+          e.target.clientHeight + 1; // give some leeway
+
+      console.log(
+        e.target.scrollHeight + e.target.scrollTop - 300 < e.target.clientHeight
+      );
+      console.log(
+        e.target.scrollHeight + e.target.scrollTop,
+        e.target.clientHeight
+      );
+      if (top) {
+        await loadMoreData();
+      }
+    }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.chatName}>
-        <Title
-          level={3}
-          style={
-            {
-              // marginBottom: "60px",
-            }
-          }
-          editable={{
-            icon: <EditTwoTone style={{ fontSize: "18px" }} />,
-            tooltip: "click to edit text",
-            onChange: changeChatTitle,
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
           }}
         >
-          {chatTitle}
-        </Title>
+          <Title
+            level={3}
+            style={{
+              // marginBottom: "60px",
+              marginRight: "10px",
+            }}
+            editable={{
+              icon: <EditTwoTone style={{ fontSize: "18px" }} />,
+              tooltip: "click to edit text",
+              onChange: changeChatTitle,
+            }}
+          >
+            {chatTitle}
+          </Title>
+          {showChatLoader && <Spin />}
+        </div>
+
+        {data.length === 0 && (
+          <Text style={{ color: "#bfbfbf", fontSize: "14px", fontWeight: 500 }}>
+            No Messages
+          </Text>
+        )}
       </div>
 
-      <div className={styles.messagesContainer} id="scrollableDiv">
+      <div className={styles.messagesContainer}>
         {isLoading ? (
           <div style={{ width: "100%", padding: "20px" }}>
             <Skeleton active />
           </div>
         ) : (
           <div
+            onScroll={handleScroll}
             style={{
               height: "100%",
-              overflow: "auto",
+              // overflow: "auto",
             }}
             className={styles.messages}
           >
-            {data.length > 0 ? (
-              <InfiniteScroll
-                userWindow={false}
-                scrollableTarget="scrollableDiv"
-                dataLength={data.length}
-                next={loadMoreData}
-                inverse={true}
-                hasMore={hasMore}
+            {data.length > 0 && (
+              <div
                 style={{ display: "flex", flexDirection: "column-reverse" }}
-                loader={<Skeleton paragraph={{ rows: 1 }} active />}
+                // loader={<Skeleton paragraph={{ rows: 1 }} active />}
               >
                 {data &&
                   data.map((message, i) => {
@@ -145,13 +183,7 @@ function ChatMessages() {
                       </div>
                     );
                   })}
-              </InfiniteScroll>
-            ) : (
-              <Text
-                style={{ color: "#bfbfbf", fontSize: "14px", fontWeight: 500 }}
-              >
-                No Messages
-              </Text>
+              </div>
             )}
           </div>
         )}
