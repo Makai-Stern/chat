@@ -13,10 +13,10 @@ const { Text } = Typography;
 function ChatCard({ chat }) {
   const user = useAuthState((state) => state.user);
   const setCurrentChat = useChatState((state) => state.setCurrentChat);
-  const currentChat= useChatState((state) => state.currentChat);
+  const currentChat = useChatState((state) => state.currentChat);
   const activeChat = chat.id === currentChat?.id ? true : false;
 
-  const [readByUser, setReadByUser] = React.useState(false);
+  const [readByUser, setReadByUser] = React.useState(true);
   const [chatName, setChatName] = React.useState("");
   const [singleChatImage, setSingleChatImage] = React.useState("");
 
@@ -31,6 +31,12 @@ function ChatCard({ chat }) {
       // Set defaults for single chat
       setChatName(recipient.name);
       setSingleChatImage(recipient.profileImage);
+
+      if (chat?.lastMessage.user.id !== user?.id) {
+        setReadByUser(chat.lastMessage.readBy.find((u) => u.id === user?.id));
+      } else {
+        setReadByUser(true);
+      }
     }
   }, []);
 
@@ -80,9 +86,12 @@ function ChatCard({ chat }) {
                                 fontSize: "12px",
                                 maxWidth: "150px",
                               }}
+                              strong={!readByUser}
                             >
-                              {chat.lastMessage.user.name}:{" "}
-                              {chat.lastMessage.text}
+                              {chat.lastMessage.user.id !== user.id
+                                ? chat.lastMessage.user.name
+                                : "You"}
+                              : {chat.lastMessage.text}
                             </Text>
                           </div>
                         )}
@@ -95,8 +104,12 @@ function ChatCard({ chat }) {
                                 fontSize: "12px",
                                 maxWidth: "150px",
                               }}
+                              strong={!readByUser}
                             >
-                              {chat.lastMessage.user.name} Attached a file
+                              {chat.lastMessage.user.id !== user.id
+                                ? chat.lastMessage.user.name
+                                : "You"}{" "}
+                              Attached a file
                             </Text>
                           </div>
                         )}
@@ -174,9 +187,12 @@ function ChatCard({ chat }) {
                                 fontSize: "12px",
                                 maxWidth: "150px",
                               }}
+                              strong={!readByUser}
                             >
-                              {chat.lastMessage.user.name}:{" "}
-                              {chat.lastMessage.text}
+                              {chat.lastMessage.user.id !== user.id
+                                ? chat.lastMessage.user.name
+                                : "You"}
+                              : {chat.lastMessage.text}
                             </Text>
                           </div>
                         )}
@@ -189,8 +205,12 @@ function ChatCard({ chat }) {
                                 fontSize: "12px",
                                 maxWidth: "150px",
                               }}
+                              strong={!readByUser}
                             >
-                              {chat.lastMessage.user.name} Attached a file
+                              {chat.lastMessage.user.id !== user.id
+                                ? chat.lastMessage.user.name
+                                : "You"}{" "}
+                              Attached a file
                             </Text>
                           </div>
                         )}

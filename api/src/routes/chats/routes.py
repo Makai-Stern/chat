@@ -1,6 +1,7 @@
 from typing import Optional
 from collections import defaultdict
 
+import asyncio
 from fastapi import APIRouter, Depends, Body, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy import func
@@ -223,7 +224,7 @@ def get_messages(
     page: int = None,
     limit: int = 15,
 ) -> list[Message] or list:
-
+    
     db_chat = db.query(Chat).filter(Chat.id == id).first()
 
     if db_chat is None:

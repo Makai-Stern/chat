@@ -14,6 +14,8 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
+import useOnScreen from "hooks/useOnScreen";
+import { useAuthState } from "store";
 import {
   WORD_FILE_EXTS,
   POWERPOINT_FILE_EXTS,
@@ -23,13 +25,30 @@ import {
   TEXT_FILE_EXTS,
   EXCEL_FILE_EXTS,
 } from "store/constants";
-import { useAuthState } from "store";
 import styles from "./styles.module.scss";
 
 function Message({ message, previousMessage }) {
   const user = useAuthState((state) => state.user);
   const currentUserId = user.id;
   const date = moment(message.createdAt).format("MMMM Do YYYY, h:mm a");
+  const elementRef = React.useRef(null);
+  const isOnScreen = useOnScreen(elementRef);
+  const [readByUsers, setReadByUsers] = React.useState(message.readBy);
+  const [read, setRead] = React.useState(() =>
+    readByUsers.find((u) => u.id === user.id)
+  );
+
+  React.useEffect(() => {
+    if (isOnScreen) {
+      if (message.user.id !== user.id) {
+        if (!read) {
+          // console.log("unread mesasge");
+        }
+      }
+    }
+  }, [isOnScreen]);
+
+  const readMessage = () => {};
 
   const showDate = previousMessage
     ? moment(message.createdAt).isBefore(
@@ -44,7 +63,6 @@ function Message({ message, previousMessage }) {
     ? message.attachment?.name.split(/[#?]/)[0].split(".").pop().trim()
     : "";
   let fileLocation = message.attachment ? message.attachment?.file : "";
-  console.log(filename);
 
   const handleDownload = (url, name = null) => {
     name
@@ -68,7 +86,7 @@ function Message({ message, previousMessage }) {
   };
 
   return (
-    <div className={styles.messages}>
+    <div className={styles.messages} ref={elementRef}>
       {/* TEXT */}
       {/* Received Message that's Text */}
       {message.user.id !== currentUserId && message.type === "text" && (
@@ -100,7 +118,6 @@ function Message({ message, previousMessage }) {
           </div>
         </div>
       )}
-
       {/* Sent Message that's Text */}
       {message.user.id == currentUserId && message.type === "text" && (
         <div className={styles.message} style={{ alignSelf: "flex-end" }}>
@@ -131,7 +148,6 @@ function Message({ message, previousMessage }) {
           )}
         </div>
       )}
-
       {/* ATTACHMENTS */}
       {/* Received Message that's an attachment */}
       {message.user.id !== currentUserId && message.type === "attachment" && (
@@ -256,7 +272,6 @@ function Message({ message, previousMessage }) {
           </div>
         </div>
       )}
-
       {/* Sent Message that's an attachment */}
       {message.user.id == currentUserId && message.type === "attachment" && (
         <div className={styles.message} style={{ alignSelf: "flex-end" }}>
@@ -384,7 +399,6 @@ function Message({ message, previousMessage }) {
           )}
         </div>
       )}
-
       {showDate && (
         <h5
           style={{

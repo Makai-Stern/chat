@@ -43,9 +43,8 @@ function ChatMessages() {
     if (currentChat?.type === "group") setChatTitle(currentChat.name);
 
     if (currentChat?.id) {
-      ChatService.getMessages(currentChat.id, 1, FETCH_NUM).then((resposne) => {
-        const { data: messages } = resposne;
-
+      ChatService.getMessages(currentChat.id, 1, FETCH_NUM).then((response) => {
+        const { data: messages } = response;
         if (messages instanceof Array) {
           if (messages.length > 0) {
             setData(messages);
@@ -54,14 +53,15 @@ function ChatMessages() {
       });
     }
 
-    setIsLoading(false);
     setPage((prevPage) => prevPage + 1);
+    setIsLoading(false);
 
     return () => {
       setChatTitle("");
       setData([]);
       setIsLoading(false);
       setPage(1);
+      setHasMore(true);
     };
   }, [currentChat.id]);
 
@@ -106,13 +106,6 @@ function ChatMessages() {
         e.target.scrollHeight + e.target.scrollTop ===
           e.target.clientHeight + 1; // give some leeway
 
-      console.log(
-        e.target.scrollHeight + e.target.scrollTop - 300 < e.target.clientHeight
-      );
-      console.log(
-        e.target.scrollHeight + e.target.scrollTop,
-        e.target.clientHeight
-      );
       if (top) {
         await loadMoreData();
       }
@@ -145,7 +138,7 @@ function ChatMessages() {
           {showChatLoader && <Spin />}
         </div>
 
-        {data.length === 0 && (
+        {!isLoading && data.length === 0 && (
           <Text style={{ color: "#bfbfbf", fontSize: "14px", fontWeight: 500 }}>
             No Messages
           </Text>
@@ -154,7 +147,7 @@ function ChatMessages() {
 
       <div className={styles.messagesContainer}>
         {isLoading ? (
-          <div style={{ width: "100%", padding: "20px" }}>
+          <div style={{ width: "100%", paddingTop: "20px" }}>
             <Skeleton active />
           </div>
         ) : (
