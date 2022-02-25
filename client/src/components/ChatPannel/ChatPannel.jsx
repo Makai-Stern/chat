@@ -114,14 +114,7 @@ function ChatPannel() {
         </Title>
 
         {/* test */}
-        <div
-          style={{
-            marginTop: "15px",
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "12px",
-          }}
-        >
+        <div className={styles.attachments}>
           {currentAttachments.map((attachment) => (
             <div key={attachment.id}>
               {IMAGE_FILE_EXTS.includes(

@@ -118,6 +118,7 @@ def post(
                     attachment_messages.append(attachment_message)
                     # message.attachments.append(attachment)
 
+            db_chat.updated_at = func.now()
             db.add_all(attachment_messages)
             db.commit()
 

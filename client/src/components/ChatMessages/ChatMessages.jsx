@@ -15,7 +15,6 @@ const { Title, Text } = Typography;
 function ChatMessages() {
   const user = useAuthState((state) => state.user);
   const currentChat = useChatState((state) => state.currentChat);
-  const addAttachmets = useChatState((state) => state.addAttachmets);
   const [isLoading, setIsLoading] = React.useState(false);
   const [chatTitle, setChatTitle] = React.useState("");
   const [page, setPage] = React.useState(1);
@@ -206,8 +205,8 @@ function ChatMessages() {
         addMessages={addMessages}
         handleFileRemove={handleFileRemove}
         handleFileChange={handleFileChange}
-        addAttachmets={addAttachmets}
         files={files}
+        setFiles={setFiles}
       />
     </div>
   );

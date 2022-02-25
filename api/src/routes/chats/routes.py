@@ -8,7 +8,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from database.models import User, Chat, Message, Attachment
-from database.associations import Chat_User, Message_Attachment
+from database.associations import Chat_User
 from database.connect import get_db
 from src.middlewares import JWTBearer
 from .schemas import ChatSchema
@@ -67,7 +67,6 @@ def get_count(
         .join(Chat_User)
         .group_by(Chat.id)
         .filter(Chat_User.c.user_id.in_(user_id))
-        .order_by(Chat.updated_at.desc())
         .all()
     )
 
@@ -145,6 +144,7 @@ def post(
         .having(func.group_concat(Chat_User.c.user_id) == ",".join(users_id))
         .order_by(Chat_User.c.user_id)
         .filter(Chat.name == name)
+        .order_by(Chat.updated_at.asc())
         .all()
     )
     # if chat exists
@@ -224,7 +224,7 @@ def get_messages(
     page: int = None,
     limit: int = 15,
 ) -> list[Message] or list:
-    
+
     db_chat = db.query(Chat).filter(Chat.id == id).first()
 
     if db_chat is None:

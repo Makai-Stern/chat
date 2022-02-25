@@ -11,6 +11,22 @@
   margin-bottom: 30px;
 }
 
+.attachments {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  // white-space: nowrap;
+  overflow: scroll;
+  gap: 12px;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  max-height: 35vh;
+}
+
+.attachments::-webkit-scrollbar {
+  display: none;
+}
+
 .members {
   max-height: "300px";
   overflow-y: scroll;

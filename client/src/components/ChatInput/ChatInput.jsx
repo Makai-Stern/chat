@@ -20,12 +20,12 @@ function ChatInput({
   addMessages,
   handleFileRemove,
   handleFileChange,
-  addAttachmets,
   files,
   setFiles,
 }) {
   const currentChat = useChatState((state) => state.currentChat);
   const [text, setText] = React.useState("");
+  const addAttachments = useChatState((state) => state.addAttachments);
 
   function handleTextChange(event) {
     const currentText = event.target.value;
@@ -66,7 +66,8 @@ function ChatInput({
           attachments.push(m.attachment);
         }
       });
-      addAttachmets(attachments);
+      addAttachments(attachments);
+      console.log(attachments);
       // Reset the state
       setText("");
       setFiles([]);
