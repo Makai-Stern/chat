@@ -57,9 +57,16 @@ function ChatInput({
       // Send Message to Socket Server
       // socket.emit('addMessage', message)
       // add files to currentChat
-      if (files.length > 0) {
-        addAttachmets(files);
-      }
+      // if (files.length > 0) {
+      //   addAttachmets(files);
+      // }
+      let attachments = [];
+      messages.forEach((m) => {
+        if (m.attachment) {
+          attachments.push(m.attachment);
+        }
+      });
+      addAttachmets(attachments);
       // Reset the state
       setText("");
       setFiles([]);

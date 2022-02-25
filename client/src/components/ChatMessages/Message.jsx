@@ -27,16 +27,35 @@ import {
 } from "store/constants";
 import styles from "./styles.module.scss";
 
-function Message({ message, previousMessage }) {
+function Message({ message, previousMessage, nextMessage }) {
   const user = useAuthState((state) => state.user);
   const currentUserId = user.id;
   const date = moment(message.createdAt).format("MMMM Do YYYY, h:mm a");
   const elementRef = React.useRef(null);
   const isOnScreen = useOnScreen(elementRef);
   const [readByUsers, setReadByUsers] = React.useState(message.readBy);
+  const [showDate, setShowDate] = React.useState(false);
   const [read, setRead] = React.useState(() =>
     readByUsers.find((u) => u.id === user.id)
   );
+
+  React.useState(() => {
+    if (!nextMessage) {
+      setShowDate(true);
+    } else if (previousMessage) {
+      const previousMessageDate = moment(previousMessage.createdAt).format(
+        "YYYY-MM-DD"
+      );
+      const messageDate = moment(message.createdAt).format("YYYY-MM-DD");
+      setShowDate(moment(messageDate).isBefore(previousMessageDate));
+    } else {
+      const nextMessageDate = moment(nextMessage.createdAt).format(
+        "YYYY-MM-DD"
+      );
+      const messageDate = moment(message.createdAt).format("YYYY-MM-DD");
+      setShowDate(moment(messageDate).isAfter(nextMessageDate));
+    }
+  }, []);
 
   React.useEffect(() => {
     if (isOnScreen) {
@@ -49,14 +68,6 @@ function Message({ message, previousMessage }) {
   }, [isOnScreen]);
 
   const readMessage = () => {};
-
-  const showDate = previousMessage
-    ? moment(message.createdAt).isBefore(
-        previousMessage.createdAt,
-        "day",
-        "year"
-      )
-    : true;
 
   let filename = message.attachment ? message.attachment?.name : "";
   let fileExtension = message.attachment

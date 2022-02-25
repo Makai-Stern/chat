@@ -110,7 +110,10 @@ def post(
                     )
                     # create new message for attachment
                     attachment_message = Message(
-                        attachment=attachment, type="attachment", user=current_user, chat=db_chat
+                        attachment=attachment,
+                        type="attachment",
+                        user=current_user,
+                        chat=db_chat,
                     )
                     attachment_messages.append(attachment_message)
                     # message.attachments.append(attachment)
@@ -135,7 +138,7 @@ def post(
             db.add(message)
             db.commit()
             db.refresh(message)
-            response.append(message)
+            response.append(message.to_dict())
 
         return response
     else:

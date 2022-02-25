@@ -15,12 +15,14 @@ const { Title, Text } = Typography;
 function ChatMessages() {
   const user = useAuthState((state) => state.user);
   const currentChat = useChatState((state) => state.currentChat);
+  const addAttachmets = useChatState((state) => state.addAttachmets);
   const [isLoading, setIsLoading] = React.useState(false);
   const [chatTitle, setChatTitle] = React.useState("");
   const [page, setPage] = React.useState(1);
   const [hasMore, setHasMore] = React.useState(true);
   const [showChatLoader, setShowChatLoader] = React.useState(false);
   const [data, setData] = React.useState([]);
+  const [files, setFiles] = React.useState([]);
 
   const FETCH_NUM = 15;
 
@@ -91,6 +93,24 @@ function ChatMessages() {
     }
 
     setShowChatLoader(false);
+  };
+
+  const addMessages = (messages) => {
+    setData((prevMessages) => [...messages, ...prevMessages]);
+  };
+
+  const handleFileRemove = (index) => {
+    let currentFiles = [...files];
+    currentFiles.splice(index, 1);
+    setFiles(currentFiles);
+  };
+
+  const handleFileChange = (e) => {
+    const newFiles = e.target.files;
+    if (newFiles) {
+      setFiles((prevFiles) => [...newFiles, ...prevFiles]);
+    }
+    console.log(newFiles);
   };
 
   const handleScroll = async (e) => {
@@ -170,6 +190,7 @@ function ChatMessages() {
                       <div>
                         <Message
                           previousMessage={data[i - 1]}
+                          nextMessage={data[i + 1]}
                           key={i}
                           message={message}
                         />
@@ -181,7 +202,13 @@ function ChatMessages() {
           </div>
         )}
       </div>
-      <ChatInput />
+      <ChatInput
+        addMessages={addMessages}
+        handleFileRemove={handleFileRemove}
+        handleFileChange={handleFileChange}
+        addAttachmets={addAttachmets}
+        files={files}
+      />
     </div>
   );
 }
