@@ -26,6 +26,6 @@ class Readby(Base):
     def to_dict(self):
         return dict(
             user=self.user.to_dict(),
-            created_at=self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            updated_at=self.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
+            createdAt=self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            updatedAt=self.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
         )

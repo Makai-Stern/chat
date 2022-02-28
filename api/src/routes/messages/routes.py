@@ -21,8 +21,8 @@ router = APIRouter()
 @router.put("/{id}")
 def read_message(
     id: str,
-    db: Session = Depends(get_db),
     current_user: User = Depends(JWTBearer()),
+    db: Session = Depends(get_db),
 ):
     message = db.query(Message).filter(Message.id == id).first()
 

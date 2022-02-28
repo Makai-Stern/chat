@@ -146,11 +146,15 @@ function ChatMessages() {
               // marginBottom: "60px",
               marginRight: "10px",
             }}
-            editable={{
-              icon: <EditTwoTone style={{ fontSize: "18px" }} />,
-              tooltip: "click to edit text",
-              onChange: changeChatTitle,
-            }}
+            editable={
+              currentChat.type === "group"
+                ? {
+                    icon: <EditTwoTone style={{ fontSize: "18px" }} />,
+                    tooltip: "click to edit text",
+                    onChange: changeChatTitle,
+                  }
+                : false
+            }
           >
             {chatTitle}
           </Title>

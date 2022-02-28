@@ -2,7 +2,7 @@ import React from "react";
 
 import axios from "axios";
 import moment from "moment";
-import { Avatar, Image, message as alert } from "antd";
+import { Avatar, Image, Typography, message as alert } from "antd";
 import {
   FilePdfTwoTone,
   FileTextTwoTone,
@@ -15,6 +15,7 @@ import {
 } from "@ant-design/icons";
 
 import useOnScreen from "hooks/useOnScreen";
+import { MessageService } from "services";
 import { useAuthState } from "store";
 import {
   WORD_FILE_EXTS,
@@ -34,10 +35,10 @@ function Message({ message, previousMessage, nextMessage }) {
   const elementRef = React.useRef(null);
   const isOnScreen = useOnScreen(elementRef);
   const [readByUsers, setReadByUsers] = React.useState(message.readBy);
+  const [readByDate, setReadByDate] = React.useState("");
   const [showDate, setShowDate] = React.useState(false);
-  const [read, setRead] = React.useState(() =>
-    readByUsers.find((u) => u.id === user.id)
-  );
+  const [read, setRead] = React.useState(false);
+  const { Text } = Typography;
 
   React.useState(() => {
     if (!nextMessage) {
@@ -55,13 +56,19 @@ function Message({ message, previousMessage, nextMessage }) {
       const messageDate = moment(message.createdAt).format("YYYY-MM-DD");
       setShowDate(moment(messageDate).isAfter(nextMessageDate));
     }
+
+    setRead(readByUsers.length > 0);
+    if (readByUsers.length > 0) setReadByDate(moment(readByUsers[0].createdAt));
   }, []);
 
   React.useEffect(() => {
     if (isOnScreen) {
       if (message.user.id !== user.id) {
         if (!read) {
-          // console.log("unread mesasge");
+          console.log(true);
+          MessageService.read(message.id).then((res) => {
+            setReadByUsers((prevUsers) => [user, ...prevUsers]);
+          });
         }
       }
     }
@@ -124,19 +131,43 @@ function Message({ message, previousMessage, nextMessage }) {
           )}
 
           {/* Message Content */}
-          <div className={`${styles.messageContent} ${styles.receivedMessage}`}>
-            {message.text}
+          <div>
+            <div
+              className={`${styles.messageContent} ${styles.receivedMessage}`}
+            >
+              {message.text}
+            </div>
+            {/* <div className={styles.messageReadReceipts}>
+              {read ? (
+                <Text style={{ color: "#bfbfbf" }}>Read</Text>
+              ) : (
+                <Text style={{ color: "#bfbfbf" }}>Delivered</Text>
+              )}
+            </div> */}
           </div>
         </div>
       )}
       {/* Sent Message that's Text */}
       {message.user.id == currentUserId && message.type === "text" && (
         <div className={styles.message} style={{ alignSelf: "flex-end" }}>
-          {/* Message Content */}
-          <div className={`${styles.messageContent} ${styles.sentMessage}`}>
-            {message.text}
+          <div>
+            {/* Message Content */}
+            <div className={`${styles.messageContent} ${styles.sentMessage}`}>
+              {message.text}
+            </div>
+            <div
+              className={`${styles.messageReadReceipt} ${styles.justifyflexEnd}`}
+              style={{ marginTop: "6px" }}
+            >
+              {read ? (
+                <Text style={{ color: "#bfbfbf" }}>
+                  Read {moment(readByDate).fromNow(true)} ago
+                </Text>
+              ) : (
+                <Text style={{ color: "#bfbfbf" }}>Delivered</Text>
+              )}
+            </div>
           </div>
-
           {/* Avatar / Margin */}
           {previousMessage ? (
             previousMessage.user.id === message.user.id ? (
@@ -165,7 +196,7 @@ function Message({ message, previousMessage, nextMessage }) {
         <div className={styles.message}>
           {previousMessage ? (
             previousMessage.user.id === message.user.id ? (
-              <div style={{ width: "26px" }}></div>
+              <div style={{ width: "33px" }}></div>
             ) : (
               <Avatar
                 style={{ marginRight: "10px" }}
@@ -183,103 +214,143 @@ function Message({ message, previousMessage, nextMessage }) {
             />
           )}
 
-          <div className={`${styles.messageContent}`}>
-            {/* Images */}
-            {IMAGE_FILE_EXTS.includes(fileExtension) && (
-              <Image className={styles.imageAttachment} src={fileLocation} />
-            )}
+          <div>
+            <div>
+              {/* Images */}
+              {IMAGE_FILE_EXTS.includes(fileExtension) && (
+                <Image className={styles.imageAttachment} src={fileLocation} />
+              )}
 
-            {/* PDF */}
-            {PDF_FILE_EXTS.includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FilePdfTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* PDF */}
+              {PDF_FILE_EXTS.includes(fileExtension) && (
+                <div
+                  className={`${styles.receivedMessage} ${styles.fileAttachment}`}
+                >
+                  <FilePdfTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
 
-            {/* Text */}
-            {TEXT_FILE_EXTS.includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FileTextTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* Text */}
+              {TEXT_FILE_EXTS.includes(fileExtension) && (
+                <div
+                  className={`${styles.receivedMessage} ${styles.fileAttachment}`}
+                >
+                  <FileTextTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
 
-            {/* Word */}
-            {WORD_FILE_EXTS.includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FileWordTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* Word */}
+              {WORD_FILE_EXTS.includes(fileExtension) && (
+                <div
+                  className={`${styles.receivedMessage} ${styles.fileAttachment}`}
+                >
+                  <FileWordTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
 
-            {/* Power Point */}
-            {POWERPOINT_FILE_EXTS.includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FilePptTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* Power Point */}
+              {POWERPOINT_FILE_EXTS.includes(fileExtension) && (
+                <div
+                  className={`${styles.receivedMessage} ${styles.fileAttachment}`}
+                >
+                  <FilePptTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
 
-            {/* Zip */}
-            {ZIP_FILE_EXTS.includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FileZipTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* Zip */}
+              {ZIP_FILE_EXTS.includes(fileExtension) && (
+                <div
+                  className={`${styles.receivedMessage} ${styles.fileAttachment}`}
+                >
+                  <FileZipTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
 
-            {/* Excel */}
-            {EXCEL_FILE_EXTS.includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FileExcelTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* Excel */}
+              {EXCEL_FILE_EXTS.includes(fileExtension) && (
+                <div
+                  className={`${styles.receivedMessage} ${styles.fileAttachment}`}
+                >
+                  <FileExcelTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a onClick={() => handleDownload(fileLocation, filename)}>
+                    {filename}
+                  </a>
+                </div>
+              )}
 
-            {/* Unknown */}
-            {![
-              ...IMAGE_FILE_EXTS,
-              ...WORD_FILE_EXTS,
-              ...PDF_FILE_EXTS,
-              ...ZIP_FILE_EXTS,
-              ...TEXT_FILE_EXTS,
-              ...EXCEL_FILE_EXTS,
-              ...POWERPOINT_FILE_EXTS,
-            ].includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FileUnknownTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* Unknown */}
+              {![
+                ...IMAGE_FILE_EXTS,
+                ...WORD_FILE_EXTS,
+                ...PDF_FILE_EXTS,
+                ...ZIP_FILE_EXTS,
+                ...TEXT_FILE_EXTS,
+                ...EXCEL_FILE_EXTS,
+                ...POWERPOINT_FILE_EXTS,
+              ].includes(fileExtension) && (
+                <div
+                  className={`${styles.receivedMessage} ${styles.fileAttachment}`}
+                >
+                  <FileUnknownTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
+            </div>
+            {/* <div
+              className={`${styles.messageReadReceipt}`}
+              style={{ marginTop: "6px" }}
+            >
+              <Text style={{ color: "#bfbfbf" }}>Delivered</Text>
+            </div> */}
           </div>
         </div>
       )}
@@ -287,108 +358,152 @@ function Message({ message, previousMessage, nextMessage }) {
       {message.user.id == currentUserId && message.type === "attachment" && (
         <div className={styles.message} style={{ alignSelf: "flex-end" }}>
           {/* Message Content */}
-          <div className={`${styles.messageContent}`}>
-            {/* Images */}
-            {IMAGE_FILE_EXTS.includes(fileExtension) && (
-              <Image className={styles.imageAttachment} src={fileLocation} />
-            )}
+          <div>
+            <div>
+              {/* Images */}
+              {IMAGE_FILE_EXTS.includes(fileExtension) && (
+                <Image className={styles.imageAttachment} src={fileLocation} />
+              )}
 
-            {/* PDF */}
-            {PDF_FILE_EXTS.includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FilePdfTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* PDF */}
+              {PDF_FILE_EXTS.includes(fileExtension) && (
+                <div
+                  className={`${styles.sentMessage} ${styles.fileAttachment}`}
+                  style={{ color: "#fff" }}
+                >
+                  <FilePdfTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
 
-            {/* Text */}
-            {TEXT_FILE_EXTS.includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FileTextTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* Text */}
+              {TEXT_FILE_EXTS.includes(fileExtension) && (
+                <div
+                  className={`${styles.sentMessage} ${styles.fileAttachment}`}
+                  style={{ color: "#fff" }}
+                >
+                  <FileTextTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
 
-            {/* Word */}
-            {WORD_FILE_EXTS.includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FileWordTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* Word */}
+              {WORD_FILE_EXTS.includes(fileExtension) && (
+                <div
+                  className={`${styles.sentMessage} ${styles.fileAttachment}`}
+                  style={{ color: "#fff" }}
+                >
+                  <FileWordTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
 
-            {/* Power Point */}
-            {POWERPOINT_FILE_EXTS.includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FilePptTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* Power Point */}
+              {POWERPOINT_FILE_EXTS.includes(fileExtension) && (
+                <div
+                  className={`${styles.sentMessage} ${styles.fileAttachment}`}
+                  style={{ color: "#fff" }}
+                >
+                  <FilePptTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
 
-            {/* Zip */}
-            {ZIP_FILE_EXTS.includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FileZipTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* Zip */}
+              {ZIP_FILE_EXTS.includes(fileExtension) && (
+                <div
+                  className={`${styles.sentMessage} ${styles.fileAttachment}`}
+                >
+                  <FileZipTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
 
-            {/* Excel */}
-            {EXCEL_FILE_EXTS.includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FileExcelTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                <a onClick={() => handleDownload(fileLocation, filename)}>
-                  {filename}
-                </a>
-              </div>
-            )}
+              {/* Excel */}
+              {EXCEL_FILE_EXTS.includes(fileExtension) && (
+                <div
+                  className={`${styles.sentMessage} ${styles.fileAttachment}`}
+                >
+                  <FileExcelTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
 
-            {/* Unknown */}
-            {![
-              ...IMAGE_FILE_EXTS,
-              ...WORD_FILE_EXTS,
-              ...PDF_FILE_EXTS,
-              ...ZIP_FILE_EXTS,
-              ...TEXT_FILE_EXTS,
-              ...EXCEL_FILE_EXTS,
-              ...POWERPOINT_FILE_EXTS,
-            ].includes(fileExtension) && (
-              <div
-                className={`${styles.messageContent} ${styles.receivedMessage} ${styles.receivedFileAttachment}`}
-              >
-                <FileUnknownTwoTone
-                  style={{ marginRight: "5px", fontSize: "20px" }}
-                />
-                {filename}
-              </div>
-            )}
+              {/* Unknown */}
+              {![
+                ...IMAGE_FILE_EXTS,
+                ...WORD_FILE_EXTS,
+                ...PDF_FILE_EXTS,
+                ...ZIP_FILE_EXTS,
+                ...TEXT_FILE_EXTS,
+                ...EXCEL_FILE_EXTS,
+                ...POWERPOINT_FILE_EXTS,
+              ].includes(fileExtension) && (
+                <div
+                  className={`${styles.sentMessage} ${styles.fileAttachment}`}
+                >
+                  <FileUnknownTwoTone
+                    style={{ marginRight: "5px", fontSize: "20px" }}
+                  />
+                  <a
+                    onClick={() => handleDownload(fileLocation, filename)}
+                    style={{ color: "#fff" }}
+                  >
+                    {filename}
+                  </a>
+                </div>
+              )}
+            </div>
+            <div
+              className={`${styles.messageReadReceipt} ${styles.justifyflexEnd}`}
+              style={{ marginTop: "6px" }}
+            >
+              <Text style={{ color: "#bfbfbf" }}>Delivered</Text>
+            </div>
           </div>
-
-          {/* iconr / Margin */}
+          {/* icon / Margin */}
           {previousMessage ? (
             previousMessage.user.id === message.user.id ? (
               <div style={{ width: "33px" }}></div>

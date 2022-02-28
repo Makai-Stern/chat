@@ -16,6 +16,16 @@
   scrollbar-width: none; /* Firefox */
 }
 
+.messageReadReceipts {
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+.justifyflexEnd {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .messagesContainer::-webkit-scrollbar {
   display: none;
 }
@@ -55,12 +65,16 @@
 }
 
 .imageAttachment {
+  max-width: 350px;
   border-radius: 10px;
 }
 
-.receivedFileAttachment {
+.fileAttachment {
   display: flex;
   align-items: center;
+  border-radius: 10px;
+  max-width: 350px;
+  padding: 8px;
   cursor: pointer;
   // font-size: 15px;
   color: rgb(24, 144, 255);
