@@ -15,6 +15,7 @@ import {
 } from "@ant-design/icons";
 
 import useOnScreen from "hooks/useOnScreen";
+import { handleDownload } from "functions";
 import { MessageService } from "services";
 import { useAuthState } from "store";
 import {
@@ -81,27 +82,6 @@ function Message({ message, previousMessage, nextMessage }) {
     ? message.attachment?.name.split(/[#?]/)[0].split(".").pop().trim()
     : "";
   let fileLocation = message.attachment ? message.attachment?.file : "";
-
-  const handleDownload = (url, name = null) => {
-    name
-      ? alert.info(`Downloading "${name}"`)
-      : alert.info(`Downloading file...`);
-    axios
-      .get(url, {
-        responseType: "blob",
-      })
-      .then((response) => {
-        // if filename is not set, get filename from url
-        const filename = name ? name : url.substring(url.lastIndexOf("/") + 1);
-        let blob = new Blob([response.data], { type: response.data.type });
-        let link = document.createElement("a");
-        link.href = window.URL.createObjectURL(blob);
-        link.download = filename;
-        link.click();
-        link.remove();
-        alert.success(`Downloaded "${filename}"`);
-      });
-  };
 
   return (
     <div className={styles.messages} ref={elementRef}>
@@ -500,7 +480,13 @@ function Message({ message, previousMessage, nextMessage }) {
               className={`${styles.messageReadReceipt} ${styles.justifyflexEnd}`}
               style={{ marginTop: "6px" }}
             >
-              <Text style={{ color: "#bfbfbf" }}>Delivered</Text>
+              {read ? (
+                <Text style={{ color: "#bfbfbf" }}>
+                  Read {moment(readByDate).fromNow(true)} ago
+                </Text>
+              ) : (
+                <Text style={{ color: "#bfbfbf" }}>Delivered</Text>
+              )}
             </div>
           </div>
           {/* icon / Margin */}

@@ -1,6 +1,8 @@
+// TODO: Create a AttachmentCard Component
+
 import React from "react";
 
-import { Typography, Image } from "antd";
+import { Typography, Image, Tooltip } from "antd";
 import {
   FilePdfTwoTone,
   FileTextTwoTone,
@@ -21,6 +23,7 @@ import {
   TEXT_FILE_EXTS,
   EXCEL_FILE_EXTS,
 } from "store/constants";
+import { handleDownload } from "functions";
 import { ChatService } from "services";
 import { useChatState } from "store";
 import MemberCard from "components/MemberCard/MemberCard";
@@ -145,6 +148,7 @@ function ChatPannel() {
                     alignItems: "center",
                     justifyContent: "center",
                     border: "1px solid #f5f5f5",
+                    cursor: "pointer",
                   }}
                 >
                   <FilePdfTwoTone style={{ fontSize: "25px" }} />
@@ -165,6 +169,7 @@ function ChatPannel() {
                     alignItems: "center",
                     justifyContent: "center",
                     border: "1px solid #f5f5f5",
+                    cursor: "pointer",
                   }}
                 >
                   <FileTextTwoTone style={{ fontSize: "25px" }} />
@@ -185,6 +190,7 @@ function ChatPannel() {
                     alignItems: "center",
                     justifyContent: "center",
                     border: "1px solid #f5f5f5",
+                    cursor: "pointer",
                   }}
                 >
                   <FileWordTwoTone style={{ fontSize: "25px" }} />
@@ -205,6 +211,7 @@ function ChatPannel() {
                     alignItems: "center",
                     justifyContent: "center",
                     border: "1px solid #f5f5f5",
+                    cursor: "pointer",
                   }}
                 >
                   <FilePptTwoTone style={{ fontSize: "25px" }} />
@@ -225,6 +232,7 @@ function ChatPannel() {
                     alignItems: "center",
                     justifyContent: "center",
                     border: "1px solid #f5f5f5",
+                    cursor: "pointer",
                   }}
                 >
                   <FileZipTwoTone style={{ fontSize: "25px" }} />
@@ -235,20 +243,26 @@ function ChatPannel() {
               {EXCEL_FILE_EXTS.includes(
                 attachment.name.split(/[#?]/)[0].split(".").pop().trim()
               ) && (
-                <div
-                  style={{
-                    width: "70px",
-                    height: "70px",
-                    background: "#fafafa",
-                    borderRadius: "10px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "1px solid #f5f5f5",
-                  }}
-                >
-                  <FileExcelTwoTone style={{ fontSize: "25px" }} />
-                </div>
+                <Tooltip title={attachment.name}>
+                  <div
+                    style={{
+                      width: "70px",
+                      height: "70px",
+                      background: "#fafafa",
+                      borderRadius: "10px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "1px solid #f5f5f5",
+                      cursor: "pointer",
+                    }}
+                    onClick={() =>
+                      handleDownload(attachment.file, attachment.name)
+                    }
+                  >
+                    <FileExcelTwoTone style={{ fontSize: "25px" }} />
+                  </div>
+                </Tooltip>
               )}
 
               {/* Unknown */}
@@ -273,6 +287,7 @@ function ChatPannel() {
                     alignItems: "center",
                     justifyContent: "center",
                     border: "1px solid #f5f5f5",
+                    cursor: "pointer",
                   }}
                 >
                   <FileUnknownTwoTone style={{ fontSize: "25px" }} />

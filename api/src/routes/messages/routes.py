@@ -42,12 +42,18 @@ def read_message(
         )
 
     # check if user is in chat
-    if current_user in chat.users:
+    if current_user in chat.users and current_user not in message.read_by:
         readBy = Readby(user=current_user, message=message)
         db.add(readBy)
         db.commit()
         db.refresh(message)
         return message.to_dict()
+
+    if current_user in message.read_by:
+        return JSONResponse(
+            content={{"message": "You already read this message."}},
+            status_code=200,
+        )
 
     return JSONResponse(
         content={"error": {"message": "You are not authorized to view this message."}},
