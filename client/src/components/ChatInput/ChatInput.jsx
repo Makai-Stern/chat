@@ -1,20 +1,13 @@
 import React from "react";
 
-import { Input, Button, message, Typography } from "antd";
+import { Input, Button, message } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 
 import { MessageService } from "services";
 import { useChatState } from "store";
 import styles from "./styles.module.scss";
 import FileUploadPin from "components/FileUploadPin/FileUploadPin";
-
-const FileCard = ({ file, index, handleFileRemove }) => {
-  return (
-    <div mx={3} onClick={() => handleFileRemove(index)}>
-      <Typography.Text size="sm">{file.name}</Typography.Text>
-    </div>
-  );
-};
+import FileCardContainer from "components/FileCard/FileCardContainer";
 
 function ChatInput({
   addMessages,
@@ -78,26 +71,7 @@ function ChatInput({
 
   return (
     <>
-      <div
-        style={{
-          d: "flex",
-          alignItems: "center",
-          position: "absolute",
-          bottom: "75px",
-          width: "100%",
-          paddingLeft: "20px",
-        }}
-      >
-        {files &&
-          files.map((f, i) => (
-            <FileCard
-              key={i}
-              file={f}
-              index={i}
-              handleFileRemove={handleFileRemove}
-            />
-          ))}
-      </div>
+      <FileCardContainer files={files} handleFileRemove={handleFileRemove} />
       <div className={styles.chatInputContainer}>
         <FileUploadPin handleFileChange={handleFileChange} />
 
