@@ -78,7 +78,16 @@ function ChatInput({
 
   return (
     <>
-      <div style={{ d: "flex", alignItems: "center" }}>
+      <div
+        style={{
+          d: "flex",
+          alignItems: "center",
+          position: "absolute",
+          bottom: "75px",
+          width: "100%",
+          paddingLeft: "20px",
+        }}
+      >
         {files &&
           files.map((f, i) => (
             <FileCard
@@ -91,12 +100,15 @@ function ChatInput({
       </div>
       <div className={styles.chatInputContainer}>
         <FileUploadPin handleFileChange={handleFileChange} />
-        <Input
+
+        <Input.TextArea
+          allowClear
           style={{
             width: "calc(100% - 200px)",
             borderRadius: "8px",
             borderColor: "rgb(229 228 228)",
           }}
+          autoSize={{ minRows: 1, maxRows: 2 }}
           placeholder="Send a message..."
           defaultValue=""
           value={text}
