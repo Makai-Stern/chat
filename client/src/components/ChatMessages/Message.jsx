@@ -1,6 +1,5 @@
 import React from "react";
 
-import axios from "axios";
 import moment from "moment";
 import { Avatar, Image, Typography, message as alert } from "antd";
 import {
@@ -59,7 +58,8 @@ function Message({ message, previousMessage, nextMessage }) {
     }
 
     setRead(readByUsers.length > 0);
-    if (readByUsers.length > 0) setReadByDate(moment(readByUsers[0].createdAt));
+    if (readByUsers.length > 0)
+      setReadByDate(moment(readByUsers[0].createdAt).format("YYYY-MM-DD"));
   }, []);
 
   React.useEffect(() => {
