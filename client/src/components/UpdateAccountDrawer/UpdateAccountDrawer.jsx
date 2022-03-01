@@ -18,10 +18,10 @@ import styles from "./styles.module.scss";
 function UpdateAccountDrawer({ onClose, placement, visible }) {
   const user = useAuthState((state) => state.user);
   const setUser = useAuthState((state) => state.setUser);
+  const [responseErrors, setResponseErrors] = React.useState({});
   const [isLoading, setIsLoading] = React.useState(false);
   const [profileImage, setProfileImage] = React.useState(user?.profileImage);
   const [name, setName] = React.useState(user?.name);
-  const [responseErrors, setResponseErrors] = React.useState({});
   const [email, setEmail] = React.useState(user?.email);
   const [username, setUsername] = React.useState(user?.username);
   const [takenUsernames, setTakenUsernames] = React.useState([]);
@@ -260,7 +260,6 @@ function UpdateAccountDrawer({ onClose, placement, visible }) {
     if (response.data && !response.serverError) {
       setUser(response.data);
       setProfileImage(response.data.profileImage);
-
       message.success("Your profile Image was updated.");
     } else {
       message.error("There was an error. Please try again.");

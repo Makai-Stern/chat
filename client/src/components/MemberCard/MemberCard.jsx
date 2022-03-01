@@ -13,30 +13,54 @@ function MemberCard({ chat, user, style }) {
 
   return (
     <div className={styles.memberCardContainer} style={style}>
-      <div className={styles.memberCardLeft}>
-        <Avatar
-          src={user.profileImage}
-          shape="square"
-          size="large"
-          icon={<UserOutlined />}
-          styles={{ borderRadius: "10px" }}
-        />
+      {user.id !== currentUser?.id ? (
+        <div className={styles.memberCardLeft}>
+          <Avatar
+            src={user.profileImage}
+            shape="square"
+            size="large"
+            icon={<UserOutlined />}
+            styles={{ borderRadius: "10px" }}
+          />
 
-        <div className={styles.memberCardLeftMiddle}>
-          <Text style={{ fontWeight: 500 }}>
-            {user.name}{" "}
-            {user.id === chat?.owner?.id && (
-              <Tag color="geekblue" style={{ marginLeft: "5px" }}>
-                Owner
-              </Tag>
-            )}
-            {user.id === currentUser?.id && (
-              <Tag style={{ marginLeft: "5px" }}>You</Tag>
-            )}
-          </Text>
-          <Text style={{ color: "#bfbfbf" }}>@{user.username}</Text>
+          <div className={styles.memberCardLeftMiddle}>
+            <Text style={{ fontWeight: 500 }}>
+              {user.name}{" "}
+              {user.id === chat?.owner?.id && (
+                <Tag color="geekblue" style={{ marginLeft: "5px" }}>
+                  Owner
+                </Tag>
+              )}
+            </Text>
+            <Text style={{ color: "#bfbfbf" }}>@{user.username}</Text>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className={styles.memberCardLeft}>
+          <Avatar
+            src={currentUser.profileImage}
+            shape="square"
+            size="large"
+            icon={<UserOutlined />}
+            styles={{ borderRadius: "10px" }}
+          />
+
+          <div className={styles.memberCardLeftMiddle}>
+            <Text style={{ fontWeight: 500 }}>
+              {currentUser.name}{" "}
+              {currentUser.id === chat?.owner?.id && (
+                <Tag color="geekblue" style={{ marginLeft: "5px" }}>
+                  Owner
+                </Tag>
+              )}
+              {currentUser.id === user?.id && (
+                <Tag style={{ marginLeft: "5px" }}>You</Tag>
+              )}
+            </Text>
+            <Text style={{ color: "#bfbfbf" }}>@{currentUser.username}</Text>
+          </div>
+        </div>
+      )}
 
       {user.id !== currentUser.id && chat.type !== "single" && (
         <Popconfirm
