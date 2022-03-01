@@ -22,8 +22,8 @@ def register(user: AuthUserSchema = Body(...), db: Session = Depends(get_db)):
 
     errors = {}
     # Check if user already exists
-    email_exists = db.query(User).filter(User.email == user.email).first()
-    username_exists = db.query(User).filter(User.username == user.username).first()
+    email_exists = db.query(User).filter(User.email == user.email.lower()).first()
+    username_exists = db.query(User).filter(User.username == user.username.lower()).first()
 
     # Error Handling
     email_regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
@@ -118,10 +118,10 @@ async def login(
     content = {"error": "Email or Password invalid"}
 
     if user.email:
-        db_user = db.query(User).filter(User.email == user.email).first()
+        db_user = db.query(User).filter(User.email == user.email.lower()).first()
     elif user.username:
         content = {"error": "Username or Password invalid"}
-        db_user = db.query(User).filter(User.username == user.username).first()
+        db_user = db.query(User).filter(User.username == user.username.lower()).first()
 
     # Generic Response for a unsuccessful attempt / user does not exist
     not_authenticated = JSONResponse(

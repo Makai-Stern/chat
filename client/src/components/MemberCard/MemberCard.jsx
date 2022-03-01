@@ -38,7 +38,7 @@ function MemberCard({ chat, user, style }) {
         </div>
       </div>
 
-      {user.id !== 3 && (
+      {user.id !== currentUser.id && chat.type !== "single" && (
         <Popconfirm
           placement="bottomRight"
           title={`Create a new chat with ${user.name}?`}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, Spin } from "antd";
+import { Image, Spin, message } from "antd";
 import {
   FilePdfTwoTone,
   FileTextTwoTone,
@@ -8,7 +8,6 @@ import {
   FileWordTwoTone,
   FilePptTwoTone,
   FileZipTwoTone,
-  UserOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -31,17 +30,22 @@ function FileCard({ file, handleFileRemove, index }) {
   // For image preview
   React.useEffect(() => {
     setIsLoading(true);
-    const objectUrl = IMAGE_FILE_EXTS.includes(fileExtension)
-      ? URL.createObjectURL(file)
-      : null;
 
+    let objectUrl = null;
     if (IMAGE_FILE_EXTS.includes(fileExtension)) {
-      setPreview(objectUrl);
+      try {
+        objectUrl = URL.createObjectURL(file);
+        setPreview(objectUrl);
+      } catch (e) {
+        message.error("The file could not be added. Please try again.");
+      }
     }
     console.log(objectUrl);
     setIsLoading(false);
     // free memory when ever this component is unmounted
-    return () => URL.revokeObjectURL(objectUrl);
+    return () => {
+      IMAGE_FILE_EXTS.includes(fileExtension) && URL.revokeObjectURL(objectUrl);
+    };
   }, [file]);
 
   return (

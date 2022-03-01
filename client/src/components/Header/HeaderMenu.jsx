@@ -1,9 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, message } from "antd";
-import { DownOutlined } from "@ant-design/icons";
+import {
+  DownOutlined,
+  SettingTwoTone,
+  LeftCircleTwoTone,
+} from "@ant-design/icons";
 
-function HeaderMenu({ logout }) {
+function HeaderMenu({ logout, showUpdateDrawer, show }) {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -13,35 +17,11 @@ function HeaderMenu({ logout }) {
   };
 
   return (
-    <Menu>
-      <Menu.Item>
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.antgroup.com"
-        >
-          1st menu item
-        </a>
+    <Menu onClick={show}>
+      <Menu.Item icon={<SettingTwoTone />} onClick={showUpdateDrawer}>
+        Update Account
       </Menu.Item>
-      <Menu.Item icon={<DownOutlined />} disabled>
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.aliyun.com"
-        >
-          2nd menu item (disabled)
-        </a>
-      </Menu.Item>
-      <Menu.Item disabled>
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.luohanacademy.com"
-        >
-          3rd menu item (disabled)
-        </a>
-      </Menu.Item>
-      <Menu.Item danger onClick={handleLogout}>
+      <Menu.Item icon={<LeftCircleTwoTone />} onClick={handleLogout}>
         Logout
       </Menu.Item>
     </Menu>

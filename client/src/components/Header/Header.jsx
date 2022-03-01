@@ -1,21 +1,41 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Typography, Button, Avatar, Dropdown, Divider, Image } from "antd";
+import { Typography, Button, Avatar, Dropdown, Divider } from "antd";
 import { MessageTwoTone, DownOutlined, UserOutlined } from "@ant-design/icons";
 
 import { useAuthState } from "store";
 import HeaderMenu from "./HeaderMenu";
 import styles from "./styles.module.css";
+import UpdateAccountDrawer from "components/UpdateAccountDrawer/UpdateAccountDrawer";
 
 function Header() {
   const navigate = useNavigate();
   let pathname = window.location.pathname;
   const user = useAuthState((state) => state.user);
   const logout = useAuthState((state) => state.logout);
+  const [updateDrawerVisibility, setUpdateDrawerVisibility] =
+    React.useState(false);
+  const [menuVisibility, setMenuVisibility] = React.useState(false);
+
+  const showUpdateDrawer = () => {
+    setUpdateDrawerVisibility(true);
+  };
+
+  const onUpdateDrawerClose = () => {
+    setUpdateDrawerVisibility(false);
+  };
+
+  const handleMenuVisibleChange = (bool) => {
+    setMenuVisibility(bool);
+  };
 
   return (
     <div className={styles.header}>
+      <UpdateAccountDrawer
+        visible={updateDrawerVisibility}
+        onClose={onUpdateDrawerClose}
+      />
       <div className={styles.logo}>
         <MessageTwoTone style={{ fontSize: "25px", marginRight: "8px" }} />
 
@@ -51,7 +71,17 @@ function Header() {
 
           <Divider style={{ borderColor: "#CDCDCD" }} type="vertical" />
 
-          <Dropdown overlay={() => <HeaderMenu logout={logout} />}>
+          <Dropdown
+            onVisibleChange={handleMenuVisibleChange}
+            visible={menuVisibility}
+            overlay={() => (
+              <HeaderMenu
+                show={handleMenuVisibleChange}
+                logout={logout}
+                showUpdateDrawer={showUpdateDrawer}
+              />
+            )}
+          >
             <a
               style={{ color: "#434343", fontWeight: "500" }}
               onClick={(e) => e.preventDefault()}

@@ -18,9 +18,7 @@ router = APIRouter()
 
 # Get User by Id
 @router.get("/")
-def get_all(
-    db: Session = Depends(get_db), current_user: User = Depends(JWTBearer())
-):
+def get_all(db: Session = Depends(get_db), current_user: User = Depends(JWTBearer())):
     db_users = db.query(User).filter().all()
     return [user.to_dict() for user in db_users]
 
@@ -28,13 +26,12 @@ def get_all(
 # Get User by Id or Username
 @router.get("/{id}")
 def get_one(
-    id: str, db: Session = Depends(get_db), 
-    current_user: User = Depends(JWTBearer())
+    id: str, db: Session = Depends(get_db), current_user: User = Depends(JWTBearer())
 ):
 
     if id:
         id = id.strip('"')
-    
+
     try:
         uuid.UUID(str(id))
         id_is_uuid = True
@@ -48,7 +45,11 @@ def get_one(
     else:
         username = id
         substring = "%{0}%".format(username)
-        db_user = db.query(User).filter((User.username.ilike(substring)) | (User.name.ilike(substring))).all()
+        db_user = (
+            db.query(User)
+            .filter((User.username.ilike(substring)) | (User.name.ilike(substring)))
+            .all()
+        )
 
     if db_user:
         if type(db_user) is list:
@@ -58,11 +59,12 @@ def get_one(
 
     if not id_is_uuid:
         return []
-        
+
     return JSONResponse(
         content={"error": "User does not exist."},
         status_code=400,
     )
+
 
 @router.put("/")
 def update(
@@ -71,8 +73,8 @@ def update(
     name: Optional[str] = Form(None),
     email: Optional[str] = Form(None),
     password: Optional[str] = Form(None),
-    background_img: Optional[UploadFile] = File(None),
-    profile_img: Optional[UploadFile] = File(None),
+    backgroundImage: Optional[UploadFile] = File(None),
+    profileImage: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(JWTBearer()),
 ):
@@ -85,19 +87,17 @@ def update(
     )
 
     # Update Images
-    if background_img:
-        current_user.update_image("background", background_img)
-    if profile_img:
-        current_user.update_image("profile", profile_img)
+    if backgroundImage:
+        current_user.update_image("background", backgroundImage)
+    if profileImage:
+        current_user.update_image("profile", profileImage)
 
     # The block below will overwrite attributes based on their name
     for var, value in vars(user).items():
         # if
         if user.email and str(var) == "email":
             # Check if email exists
-            email_exists = (
-                db.query(User).filter(User.email == user.email).first()
-            )
+            email_exists = db.query(User).filter(User.email == user.email).first()
             if email_exists:
                 errors["email"] = (
                     "Email is taken."
@@ -184,7 +184,7 @@ def delete(
     response: Response,
     db: Session = Depends(get_db),
     current_user: User = Depends(JWTBearer()),
-):  
+):
     db_user_data = current_user.to_dict()
     db.query(User).filter(User.id == current_user.id).delete()
     db.commit()
