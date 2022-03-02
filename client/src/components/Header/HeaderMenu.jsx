@@ -3,13 +3,21 @@ import { useNavigate } from "react-router-dom";
 import { Menu, message } from "antd";
 import { SettingTwoTone, LeftCircleTwoTone } from "@ant-design/icons";
 
+import { useChatState } from "store";
+
 function HeaderMenu({ logout, showUpdateDrawer, show }) {
   const navigate = useNavigate();
+  const setChats = useChatState((state) => state.setChats);
+  const setChatCount = useChatState((state) => state.setChatCount);
+  const setCurrentChat = useChatState((state) => state.setCurrentChat);
 
   const handleLogout = async () => {
     await logout();
     message.success("You have been logged out.");
     navigate("/login");
+    setChatCount(0);
+    setChats([]);
+    setCurrentChat([]);
   };
 
   return (

@@ -22,6 +22,7 @@ const useStore = create((set, get) => ({
     set({ chats: [chat, ...get().chats] });
   },
   addChats: (chats) => set({ chats: [...chats, ...get().chats] }),
+  clear: () => set({}, true),
 }));
 
 export default useStore;

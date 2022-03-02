@@ -78,7 +78,7 @@ function ChatMessages() {
 
     setShowChatLoader(true);
     const { data: messages } = await ChatService.getMessages(
-      currentChat.id,
+      currentChat?.id,
       page,
       FETCH_NUM
     );
@@ -150,7 +150,7 @@ function ChatMessages() {
               marginRight: "10px",
             }}
             editable={
-              currentChat.type === "group"
+              currentChat?.type === "group"
                 ? {
                     icon: <EditTwoTone style={{ fontSize: "18px" }} />,
                     tooltip: "click to edit text",

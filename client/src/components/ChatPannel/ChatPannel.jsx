@@ -117,7 +117,7 @@ function ChatPannel() {
             <Title level={5} style={{ color: "#595959", fontSize: "14px" }}>
               Attachments
             </Title>
-            {currentAttachments.length > 0 ? (
+            {currentAttachments?.length > 0 ? (
               <>
                 {/* test */}
                 <div className={styles.attachments}>
