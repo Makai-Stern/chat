@@ -132,7 +132,10 @@ function ChatMessages() {
   };
 
   return (
-    <div className={styles.container}>
+    <div
+      className={styles.container}
+      style={currentChat?.id ? {} : { borderRight: "none" }}
+    >
       <div className={styles.chatName}>
         <div
           style={{

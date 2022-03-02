@@ -41,8 +41,10 @@ function AddChatDrawer(props) {
 
   const onFinish = async (values) => {
     const formData = new FormData();
-    let usersIds = users.map((u) => u.value);
-    formData.append("users", usersIds);
+    // For now, I Disabled group chat
+    // let userIds = users.map((u) => u.value);
+    let userIds = users.value;
+    formData.append("users", userIds);
     const response = await ChatService.create(formData);
 
     const { serverError, data: chat } = response;
@@ -95,7 +97,8 @@ function AddChatDrawer(props) {
           tooltip="This is a required field"
         >
           <DebounceSelect
-            mode="multiple"
+            showSearch
+            // mode="multiple"
             value={props.users}
             placeholder="Select users"
             fetchOptions={fetchUserList}
