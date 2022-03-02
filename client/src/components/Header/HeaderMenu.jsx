@@ -1,11 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, message } from "antd";
-import {
-  DownOutlined,
-  SettingTwoTone,
-  LeftCircleTwoTone,
-} from "@ant-design/icons";
+import { SettingTwoTone, LeftCircleTwoTone } from "@ant-design/icons";
 
 function HeaderMenu({ logout, showUpdateDrawer, show }) {
   const navigate = useNavigate();
@@ -18,10 +14,10 @@ function HeaderMenu({ logout, showUpdateDrawer, show }) {
 
   return (
     <Menu onClick={show}>
-      <Menu.Item icon={<SettingTwoTone />} onClick={showUpdateDrawer}>
+      <Menu.Item key={1} icon={<SettingTwoTone />} onClick={showUpdateDrawer}>
         Update Account
       </Menu.Item>
-      <Menu.Item icon={<LeftCircleTwoTone />} onClick={handleLogout}>
+      <Menu.Item key={2} icon={<LeftCircleTwoTone />} onClick={handleLogout}>
         Logout
       </Menu.Item>
     </Menu>

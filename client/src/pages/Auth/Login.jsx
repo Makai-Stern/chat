@@ -34,7 +34,6 @@ function Login() {
   const navigate = useNavigate();
   // Checks if user is already logged in
   const { authenticated, loading } = useAuthStatus();
-
   const [isLoading, setIsLoading] = React.useState(false);
 
   const onFinish = async (user) => {

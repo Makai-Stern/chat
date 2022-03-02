@@ -66,13 +66,19 @@ function Message({ message, previousMessage, nextMessage }) {
     if (isOnScreen) {
       if (message.user.id !== user.id) {
         if (!read) {
-          console.log(true);
           MessageService.read(message.id).then((res) => {
             setReadByUsers((prevUsers) => [user, ...prevUsers]);
           });
         }
       }
     }
+
+    return () => {
+      setReadByUsers([]);
+      setReadByDate("");
+      setShowDate(false);
+      setRead(false);
+    };
   }, [isOnScreen]);
 
   const readMessage = () => {};

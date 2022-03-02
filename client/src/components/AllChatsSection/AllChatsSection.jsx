@@ -14,7 +14,7 @@ function AllChatsSection() {
   const [hasMore, setHasMore] = React.useState(true);
   const currentChatId = useChatState((state) => state.currentChatId);
   const chats = useChatState((state) => state.chats);
-  const addChats = useChatState((state) => state.addChats);
+  const setChats = useChatState((state) => state.setChats);
   const setCurrentChat = useChatState((state) => state.setCurrentChat);
   const FETCH_NUM = 20;
 
@@ -27,12 +27,10 @@ function AllChatsSection() {
     }
     setLoading(true);
     const { data } = await ChatService.getAll(page, FETCH_NUM);
-    console.log(data);
     if (data.length > 0) {
-      // setData((prevChats) => [...prevChats, ...data]);
-      addChats(data);
+      setData((prevChats) => [...prevChats, ...data]);
+      setChats(data);
       setPage((prevPage) => prevPage + 1);
-
       if (!currentChatId) {
         const firstChat = data[0];
         setCurrentChat(firstChat);
@@ -56,7 +54,7 @@ function AllChatsSection() {
             height: "calc(100vh - 150px)",
           }}
         >
-          {chats.length > 0 ? (
+          {chats?.length > 0 ? (
             <InfiniteScroll
               scrollableTarget="scrollableDiv"
               dataLength={data.length}
@@ -64,8 +62,8 @@ function AllChatsSection() {
               hasMore={hasMore}
               loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
             >
-              {chats.map((chat) => (
-                <ChatCard key={chat.id} chat={chat} />
+              {chats.map((chat, i) => (
+                <ChatCard key={i} chat={chat} />
               ))}
             </InfiniteScroll>
           ) : (

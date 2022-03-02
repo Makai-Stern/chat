@@ -64,7 +64,7 @@ function ChatMessages() {
       setPage(1);
       setHasMore(true);
     };
-  }, [currentChat.id]);
+  }, [currentChat?.id]);
 
   const changeChatTitle = (value) => {
     console.log(value);
