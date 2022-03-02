@@ -1,8 +1,6 @@
 from typing import Optional
-from collections import defaultdict
 
-import asyncio
-from fastapi import APIRouter, Depends, Body, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -11,7 +9,6 @@ from database.models import User, Chat, Message, Attachment
 from database.associations import Chat_User
 from database.connect import get_db
 from src.middlewares import JWTBearer
-from .schemas import ChatSchema
 
 
 router = APIRouter()
@@ -28,6 +25,7 @@ def get(
     # get all chats user is in
     user_id = [current_user.id]
 
+    db_chats = []
     if type(page) is int:
         # paginate chats user is in (page should start at 0)
         skip = (page - 1) * limit
@@ -51,8 +49,8 @@ def get(
             .order_by(Chat.updated_at.desc())
             .all()
         )
-
-    return [chat.to_dict() for chat in db_chats] if db_chats is not None else []
+    chats = [chat.to_dict() for chat in db_chats]
+    return chats
 
 
 @router.get("/count")
@@ -81,11 +79,27 @@ def post(
     name: Optional[str] = Form(None),
     backgroundImage: Optional[UploadFile] = File(None),
 ) -> dict or JSONResponse:
+
+    if users is None:
+        return JSONResponse(
+            content={
+                "error": {
+                    "message": "You cannot create a chat without users.",
+                }
+            },
+            status_code=400,
+        )
+
     # temp for postman
     if type(users) is str:
         users = users.strip("[]").split(",")
 
-    # check if chat.users is list
+    try:
+        len(users)
+    except:
+        users = users.strip("[]").split("")
+
+    # This is for postman
     if len(users) == 0:
         # return error if chat.users is empty
         return JSONResponse(
@@ -177,6 +191,8 @@ def post(
 
         if backgroundImage:
             chat_obj.update_image(backgroundImage)
+    else:
+        chat_obj.type = "single"
 
     # add obj to db
     db.add(chat_obj)

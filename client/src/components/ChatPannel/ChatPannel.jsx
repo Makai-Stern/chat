@@ -46,7 +46,6 @@ function ChatPannel() {
       ChatService.getAttachments(currentChat.id).then((response) => {
         const { data } = response;
         setCurrentAttachments(data);
-        console.log(data);
       });
     } else {
       setCurrentAttachments([]);
@@ -118,8 +117,8 @@ function ChatPannel() {
 
         {/* test */}
         <div className={styles.attachments}>
-          {currentAttachments.map((attachment) => (
-            <div key={attachment.id}>
+          {currentAttachments.map((attachment, i) => (
+            <div key={i}>
               {IMAGE_FILE_EXTS.includes(
                 attachment.name.split(/[#?]/)[0].split(".").pop().trim()
               ) && (

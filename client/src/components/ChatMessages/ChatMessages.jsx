@@ -190,7 +190,7 @@ function ChatMessages() {
                 {data &&
                   data.map((message, i) => {
                     return (
-                      <div>
+                      <div key={i}>
                         <Message
                           previousMessage={data[i - 1]}
                           nextMessage={data[i + 1]}

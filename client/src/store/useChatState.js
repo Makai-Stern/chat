@@ -11,9 +11,17 @@ const useStore = create((set, get) => ({
   },
   setCurrentAttachments: (currentAttachments) => set({ currentAttachments }),
   setChatCount: (chatCount) => set({ chatCount }),
+  incrementChatCount: (i) => {
+    let count = Number.isInteger(get().chatCount) ? i + get().chatCount : i;
+    set({ chatCount: count });
+  },
   setCurrentChat: (currentChat) => set({ currentChat }),
   setCurrentChatId: (currentChatId) => set({ currentChatId }),
   setChats: (chats) => set({ chats }),
+  addChat: (chat) => {
+    set({ chats: [chat, ...get().chats] });
+  },
+  addChats: (chats) => set({ chats: [...chats, ...get().chats] }),
 }));
 
 export default useStore;

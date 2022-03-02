@@ -18,6 +18,7 @@ def create_users() -> list[User]:
     hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
 
     user1username = generate_username()[0].lower()
+
     user1 = User(
         username=user1username,
         name=names.get_full_name(),
@@ -74,10 +75,11 @@ def create_users_multiple(count) -> list[User]:
     users = []
 
     for i in range(count):
-        username = generate_username()[0].lower()
+        # username = generate_username()[0].lower()
+        usersname = name.replace(" ", ".").lower()
         name = names.get_full_name()
         user = User(
-            username=username,
+            username=usersname,
             name=name,
             email="{name}@email.com".format(name=name.replace(" ", ".").lower()),
             password=hashed_password,

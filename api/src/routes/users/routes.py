@@ -32,6 +32,9 @@ def get_one(
     if id:
         id = id.strip('"')
 
+    if not id or str(id).isspace():
+        return []
+
     try:
         uuid.UUID(str(id))
         id_is_uuid = True
@@ -180,7 +183,6 @@ def update(
 # Delete User
 @router.delete("/")
 def delete(
-    id: str,
     response: Response,
     db: Session = Depends(get_db),
     current_user: User = Depends(JWTBearer()),

@@ -71,7 +71,9 @@ function ChatInput({
 
   return (
     <>
-      <FileCardContainer files={files} handleFileRemove={handleFileRemove} />
+      {files.length > 0 && (
+        <FileCardContainer files={files} handleFileRemove={handleFileRemove} />
+      )}
       <div className={styles.chatInputContainer}>
         <FileUploadPin handleFileChange={handleFileChange} />
 

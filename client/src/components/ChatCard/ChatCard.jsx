@@ -32,8 +32,8 @@ function ChatCard({ chat }) {
       setChatName(recipient.name);
       setSingleChatImage(recipient.profileImage);
 
-      if (chat?.lastMessage.user.id !== user?.id) {
-        setReadByUser(chat.lastMessage.readBy.find((u) => u.id === user?.id));
+      if (chat?.lastMessage?.user.id !== user?.id) {
+        setReadByUser(chat.lastMessage?.readBy.find((u) => u.id === user?.id));
       } else {
         setReadByUser(true);
       }

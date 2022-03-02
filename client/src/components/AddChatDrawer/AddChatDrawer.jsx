@@ -2,7 +2,8 @@ import React from "react";
 import { Drawer, Form, Input, Button, message, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 
-import { UserService } from "services";
+import { useChatState } from "store";
+import { UserService, ChatService } from "services";
 import DebounceSelect from "./DebounceSelect";
 import "./styles.css";
 
@@ -11,6 +12,10 @@ function AddChatDrawer(props) {
   const [loading, setLoading] = React.useState(false);
   const [chatName, setChatName] = React.useState("");
   const [imageUrl, setImageUrl] = React.useState("");
+  const [serverErrors, setServerErrors] = React.useState({});
+  const setCurrentChat = useChatState((state) => state.setCurrentChat);
+  const addChat = useChatState((state) => state.addChat);
+  const { users } = props;
 
   const handleChange = (value) => {
     console.log(`selected ${value}`);
@@ -29,22 +34,35 @@ function AddChatDrawer(props) {
     return response.data.map((user) => {
       return {
         label: `${user.name} - @${user.username}`,
-        value: user.username,
+        value: user.id,
       };
     });
   };
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     const formData = new FormData();
-    alert("form submitted");
+    let usersIds = users.map((u) => u.value);
+    formData.append("users", usersIds);
+    const response = await ChatService.create(formData);
+
+    const { serverError, data: chat } = response;
+    if (serverError) {
+      const { error } = serverError;
+      setServerErrors(error);
+      console.log(error);
+      if (error?.message) message.error(error.message);
+    } else {
+      addChat(chat);
+      setCurrentChat(chat);
+      message.success("The chat has been created");
+      props.onClose();
+    }
   };
 
   // Validators
   const checkUsers = (_, value) => {
-    const { users } = props;
     console.log(users.length);
     if (users.length === 0) return Promise.reject(new Error("Users required"));
-
     return Promise.resolve();
   };
 
@@ -79,7 +97,6 @@ function AddChatDrawer(props) {
           <DebounceSelect
             mode="multiple"
             value={props.users}
-            setValue={props.setUsers}
             placeholder="Select users"
             fetchOptions={fetchUserList}
             onChange={(newValue) => {

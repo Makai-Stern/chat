@@ -424,10 +424,10 @@ function UpdateAccountDrawer({ onClose, placement, visible }) {
           />
         </Form.Item>
         <Form.Item className={styles.buttonGroup}>
-          <Button type="text" style={{ marginRight: "20px" }} onClick={onClose}>
+          <Button style={{ marginRight: "10px" }} onClick={onClose}>
             Cancel
           </Button>
-          <Button loading={isLoading} htmlType="submit">
+          <Button type="primary" loading={isLoading} htmlType="submit">
             Save Changes
           </Button>
         </Form.Item>
