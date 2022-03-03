@@ -1,7 +1,7 @@
 import React from "react";
 
 import moment from "moment";
-import { Avatar, Image, Typography, message as alert } from "antd";
+import { Avatar, Image, Typography } from "antd";
 import {
   FilePdfTwoTone,
   FileTextTwoTone,
@@ -28,39 +28,27 @@ import {
 } from "store/constants";
 import styles from "./styles.module.scss";
 
-function Message({ message, previousMessage, nextMessage }) {
+function Message({ message, showDate, previousMessage }) {
   const user = useAuthState((state) => state.user);
   const currentUserId = user.id;
   const date = moment(message.createdAt).format("MMMM Do YYYY, h:mm a");
   const elementRef = React.useRef(null);
   const isOnScreen = useOnScreen(elementRef);
   const [readByUsers, setReadByUsers] = React.useState(message.readBy);
-  const [readByDate, setReadByDate] = React.useState("");
-  const [showDate, setShowDate] = React.useState(false);
-  const [read, setRead] = React.useState(false);
+  const [readByDate, setReadByDate] = React.useState(() => {
+    if (message.readBy.length > 0)
+      return moment(readByUsers[0].createdAt).format("YYYY-MM-DD");
+  });
+  const [read, setRead] = React.useState(message.readBy.length > 0);
   const { Text } = Typography;
 
-  React.useState(() => {
-    if (!nextMessage) {
-      setShowDate(true);
-    } else if (previousMessage) {
-      const previousMessageDate = moment(previousMessage.createdAt).format(
-        "YYYY-MM-DD"
-      );
-      const messageDate = moment(message.createdAt).format("YYYY-MM-DD");
-      setShowDate(moment(messageDate).isBefore(previousMessageDate));
-    } else {
-      const nextMessageDate = moment(nextMessage.createdAt).format(
-        "YYYY-MM-DD"
-      );
-      const messageDate = moment(message.createdAt).format("YYYY-MM-DD");
-      setShowDate(moment(messageDate).isAfter(nextMessageDate));
-    }
+  // console.log(message.text, message, read);
 
-    setRead(readByUsers.length > 0);
-    if (readByUsers.length > 0)
+  React.useEffect(() => {
+    setRead(message.readBy.length > 0);
+    if (message.readBy.length > 0)
       setReadByDate(moment(readByUsers[0].createdAt).format("YYYY-MM-DD"));
-  }, []);
+  }, [previousMessage]);
 
   React.useEffect(() => {
     if (isOnScreen) {
@@ -68,20 +56,12 @@ function Message({ message, previousMessage, nextMessage }) {
         if (!read) {
           MessageService.read(message.id).then((res) => {
             setReadByUsers((prevUsers) => [user, ...prevUsers]);
+            setRead(true);
           });
         }
       }
     }
-
-    return () => {
-      setReadByUsers([]);
-      setReadByDate("");
-      setShowDate(false);
-      setRead(false);
-    };
   }, [isOnScreen]);
-
-  const readMessage = () => {};
 
   let filename = message.attachment ? message.attachment?.name : "";
   let fileExtension = message.attachment
@@ -517,6 +497,7 @@ function Message({ message, previousMessage, nextMessage }) {
           )}
         </div>
       )}
+
       {showDate && (
         <h5
           style={{

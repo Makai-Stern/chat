@@ -2,6 +2,7 @@ import React from "react";
 
 import { Typography, Skeleton, Spin } from "antd";
 import { EditTwoTone } from "@ant-design/icons";
+import moment from "moment";
 
 import { useChatState } from "store";
 import { useAuthState } from "store";
@@ -192,13 +193,39 @@ function ChatMessages() {
               >
                 {data &&
                   data.map((message, i) => {
+                    const nextMessage = data[i - 1];
+                    const prevMessage = data[i + 1];
+                    let showDate = false;
+
+                    if (!prevMessage) {
+                      showDate = true;
+                    } else if (prevMessage) {
+                      const previousMessageDate = moment(
+                        prevMessage.createdAt
+                      ).format("YYYY-MM-DD");
+                      const messageDate = moment(message.createdAt).format(
+                        "YYYY-MM-DD"
+                      );
+                      showDate =
+                        moment(messageDate).isAfter(previousMessageDate);
+                    } else {
+                      const nextMessageDate = moment(
+                        nextMessage.createdAt
+                      ).format("YYYY-MM-DD");
+                      const messageDate = moment(message.createdAt).format(
+                        "YYYY-MM-DD"
+                      );
+                      showDate = moment(messageDate).isAfter(nextMessageDate);
+                    }
+
                     return (
                       <div key={i}>
                         <Message
-                          previousMessage={data[i - 1]}
-                          nextMessage={data[i + 1]}
+                          previousMessage={prevMessage}
+                          nextMessage={nextMessage}
                           key={i}
                           message={message}
+                          showDate={showDate}
                         />
                       </div>
                     );
