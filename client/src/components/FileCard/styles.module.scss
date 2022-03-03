@@ -8,12 +8,13 @@
   overflow: scroll;
   background: #fdfdfd;
   padding-bottom: 10px;
-  padding-top: 5px;
+  padding-top: 10px;
   padding-left: 20px;
   flex-wrap: wrap;
   max-height: 15vh;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+  border-top: 1px solid #eee;
 }
 
 .fileCardContainer::-webkit-scrollbar {
