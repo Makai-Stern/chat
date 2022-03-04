@@ -4,6 +4,7 @@ import { Typography, Skeleton, Spin } from "antd";
 import { EditTwoTone } from "@ant-design/icons";
 import moment from "moment";
 
+import { useSocket } from "contexts/SocketProvider";
 import { useChatState } from "store";
 import { useAuthState } from "store";
 import { ChatService } from "services";
@@ -23,6 +24,7 @@ function ChatMessages() {
   const [showChatLoader, setShowChatLoader] = React.useState(false);
   const [data, setData] = React.useState([]);
   const [files, setFiles] = React.useState([]);
+  const socket = useSocket();
 
   const FETCH_NUM = 15;
 
@@ -65,7 +67,19 @@ function ChatMessages() {
       setPage(1);
       setHasMore(true);
     };
-  }, [currentChat?.id]);
+  }, [currentChat]);
+
+  React.useEffect(() => {
+    if (socket) {
+      socket.on("getMessage", (payload) => {
+        console.log(payload.chat.id, currentChat.id);
+        if (payload.user.id !== user.id && currentChat.id === payload.chat.id) {
+          addMessages(payload.messages);
+        }
+      });
+    }
+    return () => socket.off("getMessage");
+  }, [socket, currentChat]);
 
   const changeChatTitle = (value) => {
     console.log(value);

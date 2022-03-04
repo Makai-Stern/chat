@@ -17,7 +17,7 @@ function removeUser(sid) {
 io.on("connection", (socket) => {
   socket.on("addUser", (user) => {
     addUser(user, socket.id);
-    socket.broadcast.emit("getNewUser", user);
+    // socket.broadcast.emit("getNewUser", user);
   });
 
   socket.on("joinRooms", (rooms) => {
@@ -26,15 +26,42 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("addMessage", (msg) => {
+  socket.on("sendMessage", (payload) => {
+    const { chat, user } = payload;
+
+    let sids = [];
+    chat.users.forEach((u) => {
+      if (u.id !== user.id) {
+        const socketUser = users.find((socketObj) => socketObj.id !== user.id);
+        if (socketUser) sids.push(socketUser.sid);
+      }
+    });
+
+    sids.forEach((sid) => {
+      io.to(sid).emit("getChat", payload);
+    });
+
     // send to all users in the chat except the sender
-    socket.broadcast.to(msg.chat_id).emit("getMessage", msg);
+    socket.broadcast.to(chat.id).emit("getMessage", payload);
     // send to all users in the chat
-    io.sockets.in(msg.chat_id).emit("getLastMessage", msg);
+    io.sockets.in(chat.id).emit("getLastMessage", payload);
   });
 
-  socket.on("getAllUsers", () => {
-    socket.emit("getAllUsers", users);
+  socket.on("newChat", (payload) => {
+    // DRY: Need to put in a func
+    const { chat, user } = payload;
+
+    let sids = [];
+    chat.users.forEach((u) => {
+      if (u.id !== user.id) {
+        const socketUser = users.find((socketObj) => socketObj.id !== user.id);
+        if (socketUser) sids.push(socketUser.sid);
+      }
+    });
+
+    sids.forEach((sid) => {
+      io.to(sid).emit("getChat", payload);
+    });
   });
 
   socket.on("disconnect", () => {

@@ -4,21 +4,28 @@ import { Typography, Avatar, Image } from "antd";
 import { UserOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 import Moment from "react-moment";
 
+import { useSocket } from "contexts/SocketProvider";
 import { useChatState } from "store";
 import { useAuthState } from "store";
 import styles from "./styles.module.scss";
 
 const { Text } = Typography;
 
-function ChatCard({ chat }) {
+function ChatCard({ chat, chatName }) {
+  const socket = useSocket();
   const user = useAuthState((state) => state.user);
   const setCurrentChat = useChatState((state) => state.setCurrentChat);
   const currentChat = useChatState((state) => state.currentChat);
   const activeChat = chat.id === currentChat?.id ? true : false;
 
   const [readByUser, setReadByUser] = React.useState(true);
-  const [chatName, setChatName] = React.useState("");
+  const [lastMessage, setLastMessage] = React.useState("");
+  // const [chatName, setChatName] = React.useState("");
   const [singleChatImage, setSingleChatImage] = React.useState("");
+
+  React.useEffect(() => {
+    setLastMessage(chat.lastMessage);
+  }, [chat]);
 
   React.useEffect(() => {
     if (chat?.type === "single") {
@@ -29,7 +36,7 @@ function ChatCard({ chat }) {
       });
 
       // Set defaults for single chat
-      setChatName(recipient.name);
+      // setChatName(recipient.name);
       setSingleChatImage(recipient.profileImage);
 
       if (chat?.lastMessage?.user.id !== user?.id) {
@@ -39,6 +46,17 @@ function ChatCard({ chat }) {
       }
     }
   }, []);
+
+  React.useEffect(() => {
+    if (socket) {
+      socket.on("getLastMessage", (payload) => {
+        if (payload.chat.id === chat.id) {
+          setLastMessage(payload.messages[0]);
+        }
+      });
+    }
+    return () => socket.off("getLastMessage");
+  }, [socket, chat]);
 
   const activateChat = () => {
     setCurrentChat(chat);
@@ -74,10 +92,10 @@ function ChatCard({ chat }) {
                     {chat.name}
                   </Text>
                   <div className={styles.chatCardLeftPreview}>
-                    {chat.lastMessage ? (
+                    {lastMessage ? (
                       <>
                         {/* Chat Preview */}
-                        {chat.lastMessage.type === "text" && (
+                        {lastMessage.type === "text" && (
                           <div className={styles.messagePreview}>
                             <Text
                               ellipsis={true}
@@ -88,14 +106,14 @@ function ChatCard({ chat }) {
                               }}
                               strong={!readByUser}
                             >
-                              {chat.lastMessage.user.id !== user.id
-                                ? chat.lastMessage.user.name
+                              {lastMessage.user.id !== user.id
+                                ? lastMessage.user.name
                                 : "You"}
-                              : {chat.lastMessage.text}
+                              : {lastMessage.text}
                             </Text>
                           </div>
                         )}
-                        {chat.lastMessage.type === "attachment" && (
+                        {lastMessage.type === "attachment" && (
                           <div className={styles.messagePreview}>
                             <Text
                               ellipsis={true}
@@ -106,8 +124,8 @@ function ChatCard({ chat }) {
                               }}
                               strong={!readByUser}
                             >
-                              {chat.lastMessage.user.id !== user.id
-                                ? chat.lastMessage.user.name
+                              {lastMessage.user.id !== user.id
+                                ? lastMessage.user.name
                                 : "You"}{" "}
                               Attached a file
                             </Text>
@@ -130,10 +148,10 @@ function ChatCard({ chat }) {
                 </div>
               </div>
               {/* Use Moment */}
-              {chat.lastMessage?.createdAt ? (
+              {lastMessage?.createdAt ? (
                 <Text style={{ color: "#8c8c8c", fontSize: "12px" }}>
                   <Moment fromNow ago>
-                    {chat.lastMessage.createdAt}
+                    {lastMessage.createdAt}
                   </Moment>
                 </Text>
               ) : (
@@ -175,10 +193,10 @@ function ChatCard({ chat }) {
                     {chatName}
                   </Text>
                   <div className={styles.chatCardLeftPreview}>
-                    {chat.lastMessage ? (
+                    {lastMessage ? (
                       <>
                         {/* Chat Preview */}
-                        {chat.lastMessage.type === "text" && (
+                        {lastMessage.type === "text" && (
                           <div className={styles.messagePreview}>
                             <Text
                               ellipsis={true}
@@ -189,14 +207,14 @@ function ChatCard({ chat }) {
                               }}
                               strong={!readByUser}
                             >
-                              {chat.lastMessage.user.id !== user.id
-                                ? chat.lastMessage.user.name
+                              {lastMessage.user.id !== user.id
+                                ? lastMessage.user.name
                                 : "You"}
-                              : {chat.lastMessage.text}
+                              : {lastMessage.text}
                             </Text>
                           </div>
                         )}
-                        {chat.lastMessage.type === "attachment" && (
+                        {lastMessage.type === "attachment" && (
                           <div className={styles.messagePreview}>
                             <Text
                               ellipsis={true}
@@ -207,8 +225,8 @@ function ChatCard({ chat }) {
                               }}
                               strong={!readByUser}
                             >
-                              {chat.lastMessage.user.id !== user.id
-                                ? chat.lastMessage.user.name
+                              {lastMessage.user.id !== user.id
+                                ? lastMessage.user.name
                                 : "You"}{" "}
                               Attached a file
                             </Text>
@@ -232,10 +250,10 @@ function ChatCard({ chat }) {
               </div>
               {/* Use Moment */}
               <div style={{ height: "100%" }}>
-                {chat.lastMessage?.createdAt ? (
+                {lastMessage?.createdAt ? (
                   <Text style={{ color: "#8c8c8c", fontSize: "12px" }}>
                     <Moment fromNow ago>
-                      {chat.lastMessage.createdAt}
+                      {lastMessage.createdAt}
                     </Moment>
                   </Text>
                 ) : (

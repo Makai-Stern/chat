@@ -76,8 +76,8 @@ def create_users_multiple(count) -> list[User]:
 
     for i in range(count):
         # username = generate_username()[0].lower()
-        usersname = name.replace(" ", ".").lower()
         name = names.get_full_name()
+        usersname = name.replace(" ", ".").lower()
         user = User(
             username=usersname,
             name=name,

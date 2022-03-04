@@ -2,12 +2,15 @@ import React from "react";
 import { Drawer, Form, Input, Button, message, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 
+import { useAuthState } from "store";
 import { useChatState } from "store";
+import { useSocket } from "contexts/SocketProvider";
 import { UserService, ChatService } from "services";
 import DebounceSelect from "./DebounceSelect";
 import "./styles.css";
 
 function AddChatDrawer(props) {
+  const user = useAuthState((state) => state.user);
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
   const [chatName, setChatName] = React.useState("");
@@ -15,6 +18,7 @@ function AddChatDrawer(props) {
   const [serverErrors, setServerErrors] = React.useState({});
   const setCurrentChat = useChatState((state) => state.setCurrentChat);
   const addChat = useChatState((state) => state.addChat);
+  const socket = useSocket();
   const { users } = props;
 
   const handleChange = (value) => {
@@ -56,6 +60,9 @@ function AddChatDrawer(props) {
     } else {
       addChat(chat);
       setCurrentChat(chat);
+      const payload = { chat, user };
+      socket.emit("newChat", payload);
+      socket.emit("joinRooms", [chat.id]);
       message.success("The chat has been created");
       props.onClose();
     }

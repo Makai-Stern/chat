@@ -3,6 +3,8 @@ import React from "react";
 import { Input, Button, message } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 
+import { useSocket } from "contexts/SocketProvider";
+import { useAuthState } from "store";
 import { MessageService } from "services";
 import { useChatState } from "store";
 import styles from "./styles.module.scss";
@@ -16,14 +18,21 @@ function ChatInput({
   files,
   setFiles,
 }) {
+  const user = useAuthState((state) => state.user);
+  const socket = useSocket();
   const currentChat = useChatState((state) => state.currentChat);
   const [text, setText] = React.useState("");
   const addAttachments = useChatState((state) => state.addAttachments);
 
-  function handleTextChange(event) {
+  const handleTextChange = (event) => {
     const currentText = event.target.value;
     setText(currentText);
-  }
+  };
+
+  const sendMessageToSocket = (messages) => {
+    const payload = { chat: currentChat, user, messages };
+    socket.emit("sendMessage", payload);
+  };
 
   const handleSubmit = async () => {
     if ((!text || text.match(/^ *$/) !== null) && !files) {
@@ -47,12 +56,8 @@ function ChatInput({
 
     if (messages) {
       addMessages(messages);
-      // Send Message to Socket Server
-      // socket.emit('addMessage', message)
-      // add files to currentChat
-      // if (files.length > 0) {
-      //   addAttachmets(files);
-      // }
+      sendMessageToSocket(messages);
+
       let attachments = [];
       messages.forEach((m) => {
         if (m.attachment) {
@@ -60,7 +65,6 @@ function ChatInput({
         }
       });
       addAttachments(attachments);
-      console.log(attachments);
       // Reset the state
       setText("");
       setFiles([]);

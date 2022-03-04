@@ -47,7 +47,7 @@ function Message({ message, showDate, previousMessage }) {
   React.useEffect(() => {
     setRead(message.readBy.length > 0);
     if (message.readBy.length > 0)
-      setReadByDate(moment(readByUsers[0].createdAt).format("YYYY-MM-DD"));
+      setReadByDate(moment(readByUsers[0]?.createdAt).format("YYYY-MM-DD"));
   }, [previousMessage]);
 
   React.useEffect(() => {

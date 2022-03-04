@@ -19,9 +19,15 @@ const useStore = create((set, get) => ({
   setCurrentChatId: (currentChatId) => set({ currentChatId }),
   setChats: (chats) => set({ chats }),
   addChat: (chat) => {
-    set({ chats: [chat, ...get().chats] });
+    if (!get().chats.find((c) => c.id === chat.id)) {
+      get().incrementChatCount(1);
+      set({ chats: [chat, ...get().chats] });
+    }
   },
-  addChats: (chats) => set({ chats: [...chats, ...get().chats] }),
+  addChats: (chats) => {
+    get().incrementChatCount(chats.length);
+    set({ chats: [...chats, ...get().chats] });
+  },
   clear: () => set({}, true),
 }));
 
