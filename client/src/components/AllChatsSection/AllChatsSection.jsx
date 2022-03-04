@@ -68,7 +68,6 @@ function AllChatsSection() {
       socket.on("getChat", (payload) => {
         if (!payload.user.id !== user.id) {
           if (payload.chat.users.find((u) => u.id === user.id)) {
-            console.log("Received Chat", payload);
             if (!chats.find((c) => c.id === payload.chat.id)) {
               addChat(payload.chat);
               // setCurrentChat(data.chat);
@@ -80,7 +79,7 @@ function AllChatsSection() {
       });
     }
     return () => socket.off("getChat");
-  }, [socket, chats]);
+  }, [socket, addChat]);
 
   return (
     <>

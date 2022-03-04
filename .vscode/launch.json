@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "command": "npm start",
+      "name": "Run npm start",
+      "request": "launch",
+      "cwd": "${fileDirname}",
+      "type": "node-terminal"
+    },
+    {
       "name": "Python: Current File",
       "type": "python",
       "request": "launch",

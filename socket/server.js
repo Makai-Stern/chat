@@ -43,8 +43,12 @@ io.on("connection", (socket) => {
 
     // send to all users in the chat except the sender
     socket.broadcast.to(chat.id).emit("getMessage", payload);
+
     // send to all users in the chat
-    io.sockets.in(chat.id).emit("getLastMessage", payload);
+    let updatedPayload = { ...payload };
+    updatedPayload.chat.lastMessage =
+      payload.messages[payload.messages.length - 1];
+    io.sockets.in(chat.id).emit("getLastMessage", updatedPayload);
   });
 
   socket.on("newChat", (payload) => {

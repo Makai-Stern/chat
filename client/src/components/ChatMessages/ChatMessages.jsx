@@ -72,7 +72,6 @@ function ChatMessages() {
   React.useEffect(() => {
     if (socket) {
       socket.on("getMessage", (payload) => {
-        console.log(payload.chat.id, currentChat.id);
         if (payload.user.id !== user.id && currentChat.id === payload.chat.id) {
           addMessages(payload.messages);
         }

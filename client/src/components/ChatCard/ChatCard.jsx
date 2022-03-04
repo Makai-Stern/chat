@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Typography, Avatar, Image } from "antd";
+import { Typography, Avatar } from "antd";
 import { UserOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 import Moment from "react-moment";
 
@@ -15,17 +15,14 @@ function ChatCard({ chat, chatName }) {
   const socket = useSocket();
   const user = useAuthState((state) => state.user);
   const setCurrentChat = useChatState((state) => state.setCurrentChat);
+  const updateChat = useChatState((state) => state.updateChat);
   const currentChat = useChatState((state) => state.currentChat);
   const activeChat = chat.id === currentChat?.id ? true : false;
 
   const [readByUser, setReadByUser] = React.useState(true);
-  const [lastMessage, setLastMessage] = React.useState("");
+  const [lastMessage, setLastMessage] = React.useState(chat.lastMessage);
   // const [chatName, setChatName] = React.useState("");
   const [singleChatImage, setSingleChatImage] = React.useState("");
-
-  React.useEffect(() => {
-    setLastMessage(chat.lastMessage);
-  }, [chat]);
 
   React.useEffect(() => {
     if (chat?.type === "single") {
@@ -48,15 +45,31 @@ function ChatCard({ chat, chatName }) {
   }, []);
 
   React.useEffect(() => {
+    if (lastMessage) {
+      if (lastMessage.user.id !== user.id) {
+        setReadByUser(chat.lastMessage?.readBy.find((u) => u.id === user?.id));
+      } else {
+        setReadByUser(true);
+      }
+    }
+  }, [lastMessage]);
+
+  React.useEffect(() => {
+    setLastMessage(chat.lastMessage);
+  }, [chat.lastMessage, chat]);
+
+  React.useEffect(() => {
     if (socket) {
       socket.on("getLastMessage", (payload) => {
+        console.log(chatName, "received update last message", payload.messages);
         if (payload.chat.id === chat.id) {
-          setLastMessage(payload.messages[0]);
+          // setLastMessage(payload.messages[payload.messages.length - 1]);
+          updateChat(payload.chat);
         }
       });
     }
     return () => socket.off("getLastMessage");
-  }, [socket, chat]);
+  }, [socket]);
 
   const activateChat = () => {
     setCurrentChat(chat);
