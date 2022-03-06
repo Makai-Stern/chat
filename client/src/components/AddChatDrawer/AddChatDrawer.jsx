@@ -6,7 +6,7 @@ import { useAuthState } from "store";
 import { useChatState } from "store";
 import { useSocket } from "contexts/SocketProvider";
 import { UserService, ChatService } from "services";
-import DebounceSelect from "./DebounceSelect";
+import DebounceSelect from "components/DebounceSelect/DebounceSelect";
 import "./styles.css";
 
 function AddChatDrawer(props) {

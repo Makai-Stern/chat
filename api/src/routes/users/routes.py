@@ -48,11 +48,7 @@ def get_one(
     else:
         username = id
         substring = "%{0}%".format(username)
-        db_user = (
-            db.query(User)
-            .filter((User.username.ilike(substring)) | (User.name.ilike(substring)))
-            .all()
-        )
+        db_user = db.query(User).filter((User.name.ilike(substring))).all()
 
     if db_user:
         if type(db_user) is list:

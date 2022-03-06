@@ -14,6 +14,34 @@ from src.middlewares import JWTBearer
 router = APIRouter()
 
 
+@router.get("/find/{query}")
+def find(
+    query: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(JWTBearer()),
+    page: int = None,
+    limit: int = 15,
+):
+    user_id = [current_user.id]
+
+    if query:
+        query = query.strip('"')
+
+    query = "%{0}%".format(query)
+
+    if not query or str(query).isspace():
+        return []
+
+    db_chats = (
+        db.query(Chat, User, Chat_User)
+        .group_by(Chat.id)
+        .filter((Chat_User.c.user_id.in_(user_id)) & (User.name.ilike(query)))
+        .all()
+    )
+
+    return [record.User.to_dict() for record in db_chats] if db_chats else []
+
+
 @router.get("/")
 def get(
     db: Session = Depends(get_db),

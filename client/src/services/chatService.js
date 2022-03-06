@@ -7,6 +7,11 @@ const ChatService = {
   create: async function (data) {
     return await resolve(axios.post(BASE_URL, data).then((res) => res.data));
   },
+  find: async function (query) {
+    return await resolve(
+      axios.get(`${BASE_URL}find/` + '"' + query + '"').then((res) => res.data)
+    );
+  },
   getAll: async function (page = null, limit = 15) {
     if (page && limit) {
       return await resolve(

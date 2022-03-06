@@ -1,9 +1,10 @@
 import React from "react";
 import { Typography, Input, Button } from "antd";
-import { PlusOutlined, PushpinFilled } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 
 import { useChatState } from "store";
 import { ChatService } from "services";
+import ChatSearch from "components/ChatSearch/ChatSearch";
 import AddChatDrawer from "components/AddChatDrawer/AddChatDrawer";
 // import PinnedChatsSection from "components/PinnedChatsSection/PinnedChatsSection";
 import AllChatsSection from "components/AllChatsSection/AllChatsSection";
@@ -40,7 +41,7 @@ function ChatSidebar() {
   }, []);
 
   return (
-    <div className={styles.sidebar}>
+    <div className={styles.sidebar} style={{ width: "341px" }}>
       <div className={styles.sidebarSpaceBetween}>
         <Title level={5}>Chats ({chatCount})</Title>
         <Button onClick={showDrawer} type="link" icon={<PlusOutlined />} />
@@ -53,13 +54,12 @@ function ChatSidebar() {
         />
       </div>
       <div className={styles.sidebarSpaceBetween}>
-        <div>
-          <Search
+        {/* <Search
             placeholder="Search for a chat..."
             onSearch={onSearch}
             style={{ width: 300 }}
-          />
-        </div>
+          /> */}
+        {/* <ChatSearch style={{ width: 300 }} /> */}
       </div>
       {/* <PinnedChatsSection /> */}
       <AllChatsSection />
