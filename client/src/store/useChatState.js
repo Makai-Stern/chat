@@ -31,7 +31,8 @@ const useStore = create((set, get) => ({
   setChats: (chats) => set({ chats }),
   addChat: (chat) => {
     if (!get().chats.find((c) => c.id === chat.id)) {
-      get().incrementChatCount(1);
+      // get().incrementChatCount(1);
+      get().setChatCount(1 + get().chats.length);
       set({ chats: [chat, ...get().chats] });
     }
   },
@@ -43,7 +44,8 @@ const useStore = create((set, get) => ({
     chats.forEach((chat) => {
       if (!currentChats.find((c) => c.id === chat.id)) addedChats.push(chat);
     });
-    get().incrementChatCount(addedChats.length);
+    // get().incrementChatCount(addedChats.length);
+    get().setChatCount(addedChats.length + get().chats.length);
     set({ chats: [...addedChats, ...get().chats] });
   },
   clear: () => set({}, true),
