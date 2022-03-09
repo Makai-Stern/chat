@@ -178,28 +178,27 @@ def post(
 
     # create a list of the user ids so that we can
     users_id = [u.id for u in chat_users]
+    users_id.sort()
     # check if the user already has a chat with these users w/ the same chat name -> chat.users
     db_chat_exists = (
         db.query(Chat)
         .join(Chat_User)
         .group_by(Chat.id)
-        .having(func.group_concat(Chat_User.c.user_id) == ",".join(users_id))
-        .order_by(Chat_User.c.user_id)
+        .having(func.group_concat(Chat_User.c.user_id.distinct()) == ",".join(users_id))
+        .order_by(Chat_User.c.user_id.desc())
         .filter(Chat.name == name)
-        .order_by(Chat.updated_at.asc())
+        # .order_by(Chat.updated_at.asc())
         .all()
     )
+
     # if chat exists
     if db_chat_exists:
         # return error: chat already exists, give the chat another name
+        #  "message": "Chat already exists with that name ({name}) and has the same users. Please choose a new chat name.".format(
+        #        name=name
+        #    ),
         return JSONResponse(
-            content={
-                "error": {
-                    "message": "Chat already exists with that name ({name}) and has the same users. Please choose a new chat name.".format(
-                        name=name
-                    ),
-                }
-            },
+            content={"error": {"message": "Chat already exists"}},
             status_code=400,
         )
 

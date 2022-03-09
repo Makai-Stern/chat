@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useNavigate, Navigate } from "react-router-dom";
-import { Input, Typography, Button, Form, message, Spin  } from "antd";
+import { Input, Typography, Button, Form, message, Spin } from "antd";
 import {
   EyeInvisibleOutlined,
   EyeTwoTone,
@@ -275,7 +275,7 @@ function Register() {
   };
 
   const onFinish = async (user) => {
-    console.log("Form submitted");
+    setIsLoading(true);
     const response = await AuthService.register(user);
 
     // The login was unsuccessful

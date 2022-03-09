@@ -35,6 +35,7 @@ function ChatInput({
   };
 
   const handleSubmit = async () => {
+    if (Object.keys(currentChat).length === 0) return;
     if ((!text || text.match(/^ *$/) !== null) && !files) {
       message.error("Your message is missing text.");
       return;
@@ -79,9 +80,13 @@ function ChatInput({
         <FileCardContainer files={files} handleFileRemove={handleFileRemove} />
       )}
       <div className={styles.chatInputContainer}>
-        <FileUploadPin handleFileChange={handleFileChange} />
+        <FileUploadPin
+          handleFileChange={handleFileChange}
+          disabled={Object.keys(currentChat).length === 0}
+        />
 
         <Input.TextArea
+          disabled={Object.keys(currentChat).length === 0}
           allowClear
           style={{
             width: "calc(100% - 200px)",
@@ -95,7 +100,11 @@ function ChatInput({
           onChange={handleTextChange}
         />
 
-        <Button icon={<SendOutlined />} onClick={handleSubmit}>
+        <Button
+          icon={<SendOutlined />}
+          onClick={handleSubmit}
+          disabled={Object.keys(currentChat).length === 0}
+        >
           Send
         </Button>
       </div>
