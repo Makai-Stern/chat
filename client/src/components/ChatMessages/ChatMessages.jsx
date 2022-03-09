@@ -17,6 +17,7 @@ const { Title, Text } = Typography;
 function ChatMessages() {
   const user = useAuthState((state) => state.user);
   const currentChat = useChatState((state) => state.currentChat);
+  const addAttachments = useChatState((state) => state.addAttachments);
   const [isLoading, setIsLoading] = React.useState(false);
   const [chatTitle, setChatTitle] = React.useState("");
   const [page, setPage] = React.useState(1);
@@ -110,6 +111,14 @@ function ChatMessages() {
 
   const addMessages = (messages) => {
     setData((prevMessages) => [...messages, ...prevMessages]);
+    let attachments = [];
+    messages.forEach((m) => {
+      if (m.attachment && m.user.id !== user.id) {
+        attachments.push(m.attachment);
+      }
+    });
+
+    if (attachments.length > 0) addAttachments(attachments);
   };
 
   const handleFileRemove = (index) => {
