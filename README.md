@@ -1,5 +1,5 @@
 # Chat
-Made with REACT (Ant Design), Python (Fast API), SQL (SQLAlchemy)
+Made with REACT (Ant Design), Python (Fast API), Socket IO, SQL (SQLAlchemy)
 
 ![chat-app](https://user-images.githubusercontent.com/41600750/161624601-3be53010-b652-4de0-8315-c90c91c719f3.PNG)
 
